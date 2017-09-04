@@ -8,6 +8,8 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+
 import org.json.*;
 
 /**
@@ -17,27 +19,21 @@ import org.json.*;
 public class MyAdapter extends BaseAdapter {
 
     private LayoutInflater mInflater;
-    private JSONArray jNewsList;
+    private ArrayList<JSONObject> NewsList;
 
-    public MyAdapter(Context context, JSONArray jArray) {
+    public MyAdapter(Context context, ArrayList<JSONObject> Array) {
         mInflater = LayoutInflater.from(context);
-        jNewsList = jArray;
+        NewsList = Array;
     }
 
     @Override
     public int getCount() {
-        return jNewsList.length();
+        return NewsList.size();
     }
 
     @Override
     public Object getItem(int position) {
-        try {
-            return jNewsList.getJSONObject(position);
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
+        return NewsList.get(position);
     }
 
     @Override
@@ -55,7 +51,7 @@ public class MyAdapter extends BaseAdapter {
             TextView newsTime = (TextView) convertView.findViewById(R.id.newsTime);
             TextView newsSource = (TextView) convertView.findViewById(R.id.newsSource);
 
-            JSONObject jNews = jNewsList.getJSONObject(position);
+            JSONObject jNews = NewsList.get(position);
             String _time = jNews.getString("news_Time");
             String year = _time.substring(0, 4);
             String month = _time.substring(4, 6);

@@ -6,12 +6,15 @@ import android.os.Handler;
 import android.os.Message;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ListView;
+import android.widget.Toast;
 
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 
 import java.io.*;
 import java.net.*;
+import java.util.ArrayList;
 
 import org.json.*;
 
@@ -58,16 +61,29 @@ public class MyList {
     private PullToRefreshListView list;
     private Activity activity;
     private int cacheID;
-    private JSONArray jNewsList;
+    private ArrayList<JSONObject> NewsList;
     private MyAdapter adapter;
     private URLGenerator urlGenerator;
+
+    public static final int NEW = 0;
+    public static final int REFRESH = 1;
+    public static final int APPEND = 2;
+
+
+    /*private void getToast(String text) {
+        Toast toast = new Toast(activity);
+        toast.setDuration(Toast.LENGTH_SHORT);
+        toast.setGravity(Gravity.CENTER, 0, 0);
+        toast.setText(text);
+        toast.show();
+    }*/
 
     public MyList(PullToRefreshListView _list, Activity _activity, int _cacheID) {
         list = _list;
         activity = _activity;
         cacheID = _cacheID;
-        jNewsList = new JSONArray();
-        adapter = new MyAdapter(activity, jNewsList);
+        NewsList = new ArrayList<JSONObject>();
+        adapter = new MyAdapter(activity, NewsList);
         this.list.setAdapter(adapter);
         if (_cacheID != -1)
             loadFromCache();
@@ -87,13 +103,23 @@ public class MyList {
                 }
             }
         });
+
+        list.setOnPullEventListener(new PullToRefreshBase.OnPullEventListener<ListView>() {
+            @Override
+            public void onPullEvent(PullToRefreshBase<ListView> refreshView, PullToRefreshBase.State state, PullToRefreshBase.Mode direction) {
+                if (direction == PullToRefreshBase.Mode.PULL_FROM_START)
+                    initFromURLGenerator(urlGenerator, REFRESH);
+                else if (direction == PullToRefreshBase.Mode.PULL_FROM_END)
+                    initFromURLGenerator(urlGenerator, APPEND);
+            }
+        });
     }
 
     private void loadFromCache() {
         list.setMode(PullToRefreshBase.Mode.PULL_FROM_START);
     }
 
-    public void initFromURLGenerator(final URLGenerator _urlGenerator) {
+    public void initFromURLGenerator(final URLGenerator _urlGenerator, final int mode) {
         final Handler handler = new Handler() {
             @Override
             public void handleMessage(Message msg) {
@@ -103,13 +129,17 @@ public class MyList {
                         if (s != "") {
                             list.setMode(PullToRefreshBase.Mode.BOTH);
                             JSONObject jObject = new JSONObject(s);
-                            JSONArray _jNewsList = jObject.getJSONArray("list");
-                            for (int i = 0; i < _jNewsList.length(); i++) {
-                                JSONObject jNews = _jNewsList.getJSONObject(i);
-                                jNewsList.put(jNews);
+                            JSONArray jNewsList = jObject.getJSONArray("list");
+                            if (mode != APPEND)
+                                NewsList.clear();
+                            for (int i = 0; i < jNewsList.length(); i++) {
+                                JSONObject jNews = jNewsList.getJSONObject(i);
+                                NewsList.add(jNews);
                             }
                             adapter.notifyDataSetChanged();
                         }
+                        else if (mode != NEW)
+                            Toast.makeText(activity, R.string.list_connection_failed, Toast.LENGTH_SHORT).show();
                     }
                     catch (Exception e) {
                         e.printStackTrace();
@@ -124,10 +154,15 @@ public class MyList {
                 try {
                     String s = "";
                     urlGenerator = _urlGenerator;
-                    URL url = urlGenerator.firstPage();
+                    URL url;
+                    if (mode == APPEND)
+                        url = urlGenerator.nextPage();
+                    else
+                        url = urlGenerator.firstPage();
                     HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                    conn.setReadTimeout(30000);
-                    conn.setConnectTimeout(30000);
+                    conn.setConnectTimeout(5000);
+                    conn.setReadTimeout(5000);
+
                     if (conn.getResponseCode() == 200) {
                         InputStream __netIn = conn.getInputStream();
                         InputStreamReader _netIn = new InputStreamReader(__netIn);
@@ -138,6 +173,10 @@ public class MyList {
                         __netIn.close();
                     }
                     Message msg = handler.obtainMessage(1, s);
+                    handler.sendMessage(msg);
+                }
+                catch (SocketTimeoutException e) {
+                    Message msg = handler.obtainMessage(1, "");
                     handler.sendMessage(msg);
                 }
                 catch (Exception e) {

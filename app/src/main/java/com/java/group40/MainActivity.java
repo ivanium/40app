@@ -194,7 +194,7 @@ public class MainActivity extends AppCompatActivity {
             MyList myList = new MyList(list, activity, category - 1);
             String head = "http://166.111.68.66:2042/news/action/query/latest?pageNo=";
             String tail = "&pageSize=10&category=" + category;
-            myList.initFromURLGenerator(new URLGenerator(head, tail));
+            myList.initFromURLGenerator(new URLGenerator(head, tail), MyList.NEW);
 
             return rootView;
         }

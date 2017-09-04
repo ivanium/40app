@@ -10,6 +10,7 @@
     <string name="empty_category">请至少选择一个分类。</string>
     <string name="ok">确定</string>
     <string name="reset_all">Reset All</string>
+    <string name="list_connection_failed">网络连接失败</string>
     <string name="title_activity_news">NewsActivity</string>
     <string name="title_activity_search">SearchActivity</string>
     <string name="title_activity_settings">SettingsActivity</string>
