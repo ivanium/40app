@@ -22,40 +22,6 @@ import org.json.*;
  * Created by zyh_111 on 2017/9/4.
  */
 
-class URLGenerator {
-
-    private String head;
-    private String tail;
-    private int page;
-
-    public URLGenerator(String head, String tail) {
-        this.head = head;
-        this.tail = tail;
-    }
-
-    private URL getURL() {
-        try {
-            URL url = new URL(head + page + tail);
-            return url;
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    public URL firstPage() {
-        page = 1;
-        return getURL();
-    }
-
-    public URL nextPage() {
-        page++;
-        return getURL();
-    }
-
-}
-
 public class MyList {
 
     private PullToRefreshListView list;
@@ -69,14 +35,8 @@ public class MyList {
     public static final int REFRESH = 1;
     public static final int APPEND = 2;
 
-
-    /*private void getToast(String text) {
-        Toast toast = new Toast(activity);
-        toast.setDuration(Toast.LENGTH_SHORT);
-        toast.setGravity(Gravity.CENTER, 0, 0);
-        toast.setText(text);
-        toast.show();
-    }*/
+    public static final int CONNECTED = 1;
+    public static final int CONNECT_ERROR = 2;
 
     public MyList(PullToRefreshListView _list, Activity _activity, int _cacheID) {
         list = _list;
@@ -85,7 +45,7 @@ public class MyList {
         NewsList = new ArrayList<JSONObject>();
         adapter = new MyAdapter(activity, NewsList);
         this.list.setAdapter(adapter);
-        if (_cacheID != -1)
+        if (cacheID != -1)
             loadFromCache();
 
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -104,13 +64,15 @@ public class MyList {
             }
         });
 
-        list.setOnPullEventListener(new PullToRefreshBase.OnPullEventListener<ListView>() {
+        list.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener2<ListView>() {
             @Override
-            public void onPullEvent(PullToRefreshBase<ListView> refreshView, PullToRefreshBase.State state, PullToRefreshBase.Mode direction) {
-                if (direction == PullToRefreshBase.Mode.PULL_FROM_START)
-                    initFromURLGenerator(urlGenerator, REFRESH);
-                else if (direction == PullToRefreshBase.Mode.PULL_FROM_END)
-                    initFromURLGenerator(urlGenerator, APPEND);
+            public void onPullDownToRefresh(PullToRefreshBase<ListView> refreshView) {
+                initFromURLGenerator(urlGenerator, REFRESH);
+            }
+
+            @Override
+            public void onPullUpToRefresh(PullToRefreshBase<ListView> refreshView) {
+                initFromURLGenerator(urlGenerator, APPEND);
             }
         });
     }
@@ -123,13 +85,19 @@ public class MyList {
         final Handler handler = new Handler() {
             @Override
             public void handleMessage(Message msg) {
-                if (msg.what == 1) {
-                    try {
+                try {
+                    if ((msg.what == CONNECT_ERROR) && (mode != NEW)) {
+                        Toast.makeText(activity, R.string.list_connection_failed, Toast.LENGTH_SHORT).show();
+                        if (mode == APPEND)
+                            _urlGenerator.prevPage();
+                    }
+                    if (msg.what == CONNECTED) {
                         String s = String.valueOf(msg.obj);
+                        JSONArray jNewsList = new JSONArray();
                         if (s != "") {
                             list.setMode(PullToRefreshBase.Mode.BOTH);
                             JSONObject jObject = new JSONObject(s);
-                            JSONArray jNewsList = jObject.getJSONArray("list");
+                            jNewsList = jObject.getJSONArray("list");
                             if (mode != APPEND)
                                 NewsList.clear();
                             for (int i = 0; i < jNewsList.length(); i++) {
@@ -138,12 +106,18 @@ public class MyList {
                             }
                             adapter.notifyDataSetChanged();
                         }
-                        else if (mode != NEW)
-                            Toast.makeText(activity, R.string.list_connection_failed, Toast.LENGTH_SHORT).show();
+                        if (jNewsList.length() == 0) {
+                            if (mode == APPEND)
+                                Toast.makeText(activity, R.string.no_more_result, Toast.LENGTH_SHORT).show();
+                            else
+                                Toast.makeText(activity, R.string.no_result, Toast.LENGTH_SHORT).show();
+                        }
                     }
-                    catch (Exception e) {
-                        e.printStackTrace();
-                    }
+                    if (mode != NEW)
+                        list.onRefreshComplete();
+                }
+                catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
         };
@@ -172,11 +146,11 @@ public class MyList {
                         _netIn.close();
                         __netIn.close();
                     }
-                    Message msg = handler.obtainMessage(1, s);
+                    Message msg = handler.obtainMessage(CONNECTED, s);
                     handler.sendMessage(msg);
                 }
                 catch (SocketTimeoutException e) {
-                    Message msg = handler.obtainMessage(1, "");
+                    Message msg = handler.obtainMessage(CONNECT_ERROR, "");
                     handler.sendMessage(msg);
                 }
                 catch (Exception e) {
@@ -187,4 +161,5 @@ public class MyList {
 
         thread.start();
     }
+
 }

@@ -17,14 +17,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ListView;
+import android.view.WindowManager;
 
-import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 
 import java.io.*;
-import java.net.*;
 
 import org.json.*;
 
@@ -116,6 +113,8 @@ public class MainActivity extends AppCompatActivity {
 
         mTabLayout = (TabLayout) findViewById(R.id.tabs);
         mTabLayout.setupWithViewPager(mViewPager);
+
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
     }
 
     @Override
@@ -193,7 +192,7 @@ public class MainActivity extends AppCompatActivity {
             int category = Global.catList.get(getArguments().getInt(ARG_SECTION_NUMBER) - 1) + 1;
             MyList myList = new MyList(list, activity, category - 1);
             String head = "http://166.111.68.66:2042/news/action/query/latest?pageNo=";
-            String tail = "&pageSize=10&category=" + category;
+            String tail = "&pageSize=" + Global.PAGE_SIZE + "&category=" + category;
             myList.initFromURLGenerator(new URLGenerator(head, tail), MyList.NEW);
 
             return rootView;
