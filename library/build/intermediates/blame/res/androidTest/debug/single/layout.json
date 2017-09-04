@@ -1,10 +1,10 @@
 [
     {
-        "merged": "C:\\Users\\ivanium\\Desktop\\40\\library\\build\\intermediates\\res\\merged\\androidTest\\debug\\layout\\pull_to_refresh_header_horizontal.xml",
-        "source": "C:\\Users\\ivanium\\Desktop\\40\\library\\build\\intermediates\\bundles\\debug\\res\\layout\\pull_to_refresh_header_horizontal.xml"
+        "merged": "D:\\2016-2017-3\\Java\\FinalWithGit\\40app\\library\\build\\intermediates\\res\\merged\\androidTest\\debug\\layout\\pull_to_refresh_header_horizontal.xml",
+        "source": "D:\\2016-2017-3\\Java\\FinalWithGit\\40app\\library\\build\\intermediates\\bundles\\debug\\res\\layout\\pull_to_refresh_header_horizontal.xml"
     },
     {
-        "merged": "C:\\Users\\ivanium\\Desktop\\40\\library\\build\\intermediates\\res\\merged\\androidTest\\debug\\layout\\pull_to_refresh_header_vertical.xml",
-        "source": "C:\\Users\\ivanium\\Desktop\\40\\library\\build\\intermediates\\bundles\\debug\\res\\layout\\pull_to_refresh_header_vertical.xml"
+        "merged": "D:\\2016-2017-3\\Java\\FinalWithGit\\40app\\library\\build\\intermediates\\res\\merged\\androidTest\\debug\\layout\\pull_to_refresh_header_vertical.xml",
+        "source": "D:\\2016-2017-3\\Java\\FinalWithGit\\40app\\library\\build\\intermediates\\bundles\\debug\\res\\layout\\pull_to_refresh_header_vertical.xml"
     }
 ]

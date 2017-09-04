@@ -1,12 +1,11 @@
 package com.java.group40;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-
-import android.app.AlertDialog;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -22,6 +21,7 @@ public class SettingsActivity extends AppCompatActivity {
     private CheckBox mVoice;
     private CheckBox mCat[] = new CheckBox[12];
     private Button mOK;
+    private Button mResetAll;
 
     private void emptyCategory() {
         AlertDialog.Builder emptyCat = new AlertDialog.Builder(this);
@@ -38,7 +38,6 @@ public class SettingsActivity extends AppCompatActivity {
 
     private void exportSettings(int tempCat) {
         try {
-            Global.newSettings = true;
             JSONObject jSettings = new JSONObject();
             jSettings.put(Global.J_NIGHT, mNight.isChecked());
             jSettings.put(Global.J_NO_IMAGE, mNoImage.isChecked());
@@ -84,6 +83,7 @@ public class SettingsActivity extends AppCompatActivity {
         mCat[11] = (CheckBox) findViewById(R.id.cat11);
 
         mOK = (Button) findViewById(R.id.ok);
+        mResetAll = (Button) findViewById(R.id.resetAll);
 
         mNight.setChecked(Global.night);
         mNoImage.setChecked(Global.noImage);
@@ -105,11 +105,29 @@ public class SettingsActivity extends AppCompatActivity {
                     if (mCat[i].isChecked())
                         tempCat += 1 << i;
                 if (tempCat != 0) {
+                    Global.newSettings = true;
                     exportSettings(tempCat);
                     finish();
                 }
                 else
                     emptyCategory();
+            }
+        });
+
+        mResetAll.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Global.newSettings = true;
+                File fSettings = new File(Global.PATH_SETTINGS);
+                if (fSettings.exists())
+                    fSettings.delete();
+                File fDatabase = new File(Global.PATH_CACHE);
+                if (fDatabase.exists())
+                    fDatabase.delete();
+                File dirDatabase = new File(Global.DIR_CACHE);
+                if (dirDatabase.exists())
+                    dirDatabase.delete();
+                finish();
             }
         });
     }

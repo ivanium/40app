@@ -1,2 +1,2 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merger version="3"><dataSet config="main"><source path="C:\Users\ivanium\Desktop\40\library\src\main\assets"/><source path="C:\Users\ivanium\Desktop\40\library\build\generated\assets\shaders\release"/></dataSet><dataSet config="release"><source path="C:\Users\ivanium\Desktop\40\library\src\release\assets"/></dataSet></merger>
+<merger version="3"><dataSet config="main"><source path="D:\2016-2017-3\Java\FinalWithGit\40app\library\src\main\assets"/><source path="D:\2016-2017-3\Java\FinalWithGit\40app\library\build\generated\assets\shaders\release"/></dataSet><dataSet config="release"><source path="D:\2016-2017-3\Java\FinalWithGit\40app\library\src\release\assets"/></dataSet></merger>

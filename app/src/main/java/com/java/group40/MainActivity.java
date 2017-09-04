@@ -1,32 +1,30 @@
 package com.java.group40;
 
+import android.app.Activity;
+import android.content.Intent;
+import android.database.sqlite.*;
+import android.os.Bundle;
 import android.support.design.widget.TabLayout;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.app.AppCompatDelegate;
-import android.support.v7.widget.Toolbar;
-
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.app.Activity;
-import android.content.Intent;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.AppCompatDelegate;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
+import android.widget.ListView;
 
+import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 
 import java.io.*;
 import java.net.*;
-import java.util.ArrayList;
 
 import org.json.*;
 
@@ -68,6 +66,14 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void initDatabase() {
+        File dirDatabase = new File(Global.DIR_CACHE);
+        if (!dirDatabase.exists())
+            dirDatabase.mkdirs();
+        Global.dbCache = SQLiteDatabase.openOrCreateDatabase(Global.PATH_CACHE, null);
+        Global.dbCache.execSQL("create table if not exists " + Global.STATE_READ + "(" + Global.STATE_READ_NEWS_ID + " varchar(50))");
+    }
+
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
      * fragments for each of the sections. We use a
@@ -89,6 +95,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         importSettings();
+        initDatabase();
 
         if (Global.night)
             getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_YES);
@@ -179,66 +186,15 @@ public class MainActivity extends AppCompatActivity {
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-            //TextView textView = (TextView) rootView.findViewById(R.id.section_label);
-            //textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
 
             final PullToRefreshListView list = (PullToRefreshListView) rootView.findViewById(R.id.list);
             final Activity activity = this.getActivity();
 
-            final ArrayList<String> titleList = new ArrayList<String>();
-            final ArrayList<String> idList = new ArrayList<String>();
-
-            list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    Intent intent = new Intent(activity, NewsActivity.class);
-                    intent.putExtra("id", idList.get((int) id));
-                    startActivity(intent);
-                }
-            });
-
-            final Handler handler = new Handler() {
-                @Override
-                public void handleMessage(Message msg) {
-                    if (msg.what == 1) {
-                        try {
-                            String s = String.valueOf(msg.obj);
-                            if (s != "") {
-                                JSONObject jObject = new JSONObject(s);
-                                JSONArray jNewsList = jObject.getJSONArray("list");
-                                for (int i = 0; i < jNewsList.length(); i++) {
-                                    JSONObject jNews = jNewsList.getJSONObject(i);
-                                    titleList.add(jNews.getString("news_Title"));
-                                    idList.add(jNews.getString("news_ID"));
-                                }
-                            }
-                            ArrayAdapter<String> adapter = new ArrayAdapter<String>(activity, android.R.layout.simple_list_item_1, titleList);
-                            list.setAdapter(adapter);
-                        }
-                        catch (Exception e) {
-                            e.printStackTrace();;
-                        }
-                    }
-                }
-            };
-
-            Thread thread = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        int category = Global.catList.get(getArguments().getInt(ARG_SECTION_NUMBER) - 1) + 1;
-                        URL url = new URL("http://166.111.68.66:2042/news/action/query/latest?pageNo=1&pageSize=20&category=" + category);
-                        String s = Global.getJson(url);
-                        Message msg = handler.obtainMessage(1, s);
-                        handler.sendMessage(msg);
-                    }
-                    catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
-
-            thread.start();
+            int category = Global.catList.get(getArguments().getInt(ARG_SECTION_NUMBER) - 1) + 1;
+            MyList myList = new MyList(list, activity, category - 1);
+            String head = "http://166.111.68.66:2042/news/action/query/latest?pageNo=";
+            String tail = "&pageSize=10&category=" + category;
+            myList.initFromURLGenerator(new URLGenerator(head, tail));
 
             return rootView;
         }
@@ -271,4 +227,5 @@ public class MainActivity extends AppCompatActivity {
             return getResources().getStringArray(R.array.category)[Global.catList.get(position)];
         }
     }
+
 }

@@ -139,6 +139,12 @@
             android:layout_height="wrap_content"
             android:text="@string/ok" />
 
+        <Button
+            android:id="@+id/resetAll"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/reset_all" />
+
     </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>
