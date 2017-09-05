@@ -29,6 +29,11 @@ public class Global{
     public static final String STATE_READ = "state_read";
     public static final String STATE_READ_NEWS_ID = "news_id";
 
+    public static final String LIST_CACHE = "list_cache";
+    public static final String LIST_CACHE_CAT = "category";
+    public static final String LIST_CACHE_ID = "id";
+    public static final String LIST_CACHE_J_NEWS = "j_news";
+
     public static final int PAGE_SIZE = 10;
 
     public static boolean newSettings = false;
@@ -48,28 +53,14 @@ public class Global{
 
     public static boolean getReadState(JSONObject jNews) {
         try {
-            Cursor cursor = Global.dbCache.query(Global.STATE_READ, new String[]{Global.STATE_READ_NEWS_ID},
-                    Global.STATE_READ_NEWS_ID + "=?", new String[]{jNews.getString("news_ID")}, null, null, null);
+            Cursor cursor = dbCache.query(STATE_READ, null, STATE_READ_NEWS_ID + " = ?",
+                    new String[]{jNews.getString("news_ID")}, null, null, null);
             return cursor.getCount() != 0;
         }
         catch (Exception e) {
             e.printStackTrace();
         }
         return false;
-    }
-
-    public static void setRead(JSONObject jNews, BaseAdapter adapter) {
-        try {
-            if (!getReadState(jNews)) {
-                ContentValues val = new ContentValues();
-                val.put(Global.STATE_READ_NEWS_ID, jNews.getString("news_ID"));
-                Global.dbCache.insert(Global.STATE_READ, null, val);
-                adapter.notifyDataSetChanged();
-            }
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
 }

@@ -69,6 +69,8 @@ public class MainActivity extends AppCompatActivity {
             dirDatabase.mkdirs();
         Global.dbCache = SQLiteDatabase.openOrCreateDatabase(Global.PATH_CACHE, null);
         Global.dbCache.execSQL("create table if not exists " + Global.STATE_READ + "(" + Global.STATE_READ_NEWS_ID + " varchar(50))");
+        Global.dbCache.execSQL("create table if not exists " + Global.LIST_CACHE + "(" + Global.LIST_CACHE_CAT + " int, " +
+                Global.LIST_CACHE_ID + " int, " + Global.LIST_CACHE_J_NEWS + " nvarchar(4000))");
     }
 
     /**

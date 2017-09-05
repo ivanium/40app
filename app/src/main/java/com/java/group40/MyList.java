@@ -1,7 +1,9 @@
 package com.java.group40;
 
 import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Handler;
 import android.os.Message;
 import android.view.View;
@@ -27,7 +29,7 @@ public class MyList {
     private PullToRefreshListView list;
     private Activity activity;
     private int cacheID;
-    private ArrayList<JSONObject> NewsList;
+    private ArrayList<JSONObject> newsList;
     private MyAdapter adapter;
     private URLGenerator urlGenerator;
 
@@ -42,18 +44,23 @@ public class MyList {
         list = _list;
         activity = _activity;
         cacheID = _cacheID;
-        NewsList = new ArrayList<JSONObject>();
-        adapter = new MyAdapter(activity, NewsList);
-        this.list.setAdapter(adapter);
+        newsList = new ArrayList<JSONObject>();
         if (cacheID != -1)
             loadFromCache();
+        adapter = new MyAdapter(activity, newsList);
+        this.list.setAdapter(adapter);
 
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 try {
                     JSONObject jNews = (JSONObject) adapter.getItem((int) id);
-                    Global.setRead(jNews, adapter);
+                    if (!Global.getReadState(jNews)) {
+                        ContentValues val = new ContentValues();
+                        val.put(Global.STATE_READ_NEWS_ID, jNews.getString("news_ID"));
+                        Global.dbCache.insert(Global.STATE_READ, null, val);
+                        adapter.notifyDataSetChanged();
+                    }
                     Intent intent = new Intent(activity, NewsActivity.class);
                     intent.putExtra("id", jNews.getString("news_ID"));
                     activity.startActivity(intent);
@@ -78,7 +85,22 @@ public class MyList {
     }
 
     private void loadFromCache() {
-        list.setMode(PullToRefreshBase.Mode.PULL_FROM_START);
+        try {
+            Cursor cursor = Global.dbCache.query(Global.LIST_CACHE, null, Global.LIST_CACHE_CAT + " = ?",
+                    new String[]{String.valueOf(cacheID)}, null, null, Global.LIST_CACHE_ID);
+            int cnt = cursor.getCount();
+            cursor.moveToFirst();
+            for (int i = 0; i < cnt; i++) {
+                String s = cursor.getString(2);
+                JSONObject jNews = new JSONObject(s);
+                newsList.add(jNews);
+                cursor.move(1);
+            }
+            list.setMode(PullToRefreshBase.Mode.PULL_FROM_START);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void initFromURLGenerator(final URLGenerator _urlGenerator, final int mode) {
@@ -98,11 +120,18 @@ public class MyList {
                             list.setMode(PullToRefreshBase.Mode.BOTH);
                             JSONObject jObject = new JSONObject(s);
                             jNewsList = jObject.getJSONArray("list");
-                            if (mode != APPEND)
-                                NewsList.clear();
+                            if (mode != APPEND) {
+                                newsList.clear();
+                                Global.dbCache.delete(Global.LIST_CACHE, Global.LIST_CACHE_CAT + " = ?", new String[]{String.valueOf(cacheID)});
+                            }
                             for (int i = 0; i < jNewsList.length(); i++) {
                                 JSONObject jNews = jNewsList.getJSONObject(i);
-                                NewsList.add(jNews);
+                                newsList.add(jNews);
+                                ContentValues val = new ContentValues();
+                                val.put(Global.LIST_CACHE_CAT, cacheID);
+                                val.put(Global.LIST_CACHE_ID, newsList.size() - 1);
+                                val.put(Global.LIST_CACHE_J_NEWS, jNews.toString());
+                                Global.dbCache.insert(Global.LIST_CACHE, null, val);
                             }
                             adapter.notifyDataSetChanged();
                         }
