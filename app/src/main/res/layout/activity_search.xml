@@ -11,13 +11,31 @@
         android:layout_height="wrap_content"
         android:theme="@style/AppTheme.AppBarOverlay">
 
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
-            app:popupTheme="@style/AppTheme.PopupOverlay"
-            app:title="@string/action_search" />
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/editText4"
+                android:layout_width="wrap_content"
+                android:layout_height="56dp"
+                android:layout_weight="1"
+                android:color="#FFFFFF"
+                android:ems="10"
+                android:inputType="textPersonName"
+                android:hint="@string/action_search"
+                android:layout_marginLeft="10dp"
+                android:paddingLeft="40dp"/>
+
+            <Button
+                android:id="@+id/button"
+                android:layout_width="68dp"
+                android:layout_height="wrap_content"
+                android:text="返回"
+                android:background="@android:color/transparent"
+                android:layout_marginRight="5dp" />
+        </LinearLayout>
 
     </android.support.design.widget.AppBarLayout>
 
