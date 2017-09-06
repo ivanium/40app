@@ -124,8 +124,11 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
         if (Global.newSettings) {
             Global.newSettings = false;
-            mTabLayout.getTabAt(0).select();
-            recreate();
+            //mTabLayout.getTabAt(0).select();
+            //recreate();
+            Intent intent = getBaseContext().getPackageManager().getLaunchIntentForPackage(getBaseContext().getPackageName());
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
         }
     }
 

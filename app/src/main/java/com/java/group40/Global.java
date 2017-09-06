@@ -16,7 +16,7 @@ import org.json.*;
 public class Global{
 
     public static final String J_NIGHT = "night";
-    public static final String J_NO_IMAGE = "noimage";
+    public static final String J_NO_IMAGE = "no_image";
     public static final String J_VOICE = "voice";
     public static final String J_CAT = "category";
 
