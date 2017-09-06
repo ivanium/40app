@@ -16,7 +16,7 @@ import org.json.*;
 public class Global{
 
     public static final String J_NIGHT = "night";
-    public static final String J_NO_IMAGE = "noimage";
+    public static final String J_NO_IMAGE = "no_image";
     public static final String J_VOICE = "voice";
     public static final String J_CAT = "category";
 
@@ -41,6 +41,8 @@ public class Global{
     public static boolean noImage;
     public static boolean voice;
     public static ArrayList<Integer> catList = new ArrayList<Integer>();
+
+    public static boolean isLoaded[] = {false, false, false, false, false, false, false, false, false, false, false ,false};
 
     public static SQLiteDatabase dbCache;
 

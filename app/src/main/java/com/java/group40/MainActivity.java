@@ -17,7 +17,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 
@@ -89,12 +88,21 @@ public class MainActivity extends AppCompatActivity {
     private ViewPager mViewPager;
     private TabLayout mTabLayout;
 
+    private static URLGenerator urlGenerator[] = new URLGenerator[12];
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         importSettings();
         initDatabase();
+
+        for (int i = 0; i < 12; i++)
+            if (!Global.isLoaded[i]) {
+            String head = "http://166.111.68.66:2042/news/action/query/latest?pageNo=";
+            String tail = "&pageSize=" + Global.PAGE_SIZE + "&category=" + (i + 1);
+            urlGenerator[i] = new URLGenerator(head, tail);
+            }
 
         if (Global.night)
             getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_YES);
@@ -115,8 +123,6 @@ public class MainActivity extends AppCompatActivity {
 
         mTabLayout = (TabLayout) findViewById(R.id.tabs);
         mTabLayout.setupWithViewPager(mViewPager);
-
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
     }
 
     @Override
@@ -124,8 +130,9 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
         if (Global.newSettings) {
             Global.newSettings = false;
-            mTabLayout.getTabAt(0).select();
-            recreate();
+            Intent intent = getBaseContext().getPackageManager().getLaunchIntentForPackage(getBaseContext().getPackageName());
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
         }
     }
 
@@ -146,6 +153,11 @@ public class MainActivity extends AppCompatActivity {
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_search) {
             Intent intent = new Intent(this, SearchActivity.class);
+            startActivity(intent);
+            return true;
+        }
+        else if (id == R.id.action_favorites) {
+            Intent intent = new Intent(this, FavoritesActivity.class);
             startActivity(intent);
             return true;
         }
@@ -191,11 +203,9 @@ public class MainActivity extends AppCompatActivity {
             final PullToRefreshListView list = (PullToRefreshListView) rootView.findViewById(R.id.list);
             final Activity activity = this.getActivity();
 
-            int category = Global.catList.get(getArguments().getInt(ARG_SECTION_NUMBER) - 1) + 1;
-            MyList myList = new MyList(list, activity, category - 1);
-            String head = "http://166.111.68.66:2042/news/action/query/latest?pageNo=";
-            String tail = "&pageSize=" + Global.PAGE_SIZE + "&category=" + category;
-            myList.initFromURLGenerator(new URLGenerator(head, tail), MyList.NEW);
+            int category = Global.catList.get(getArguments().getInt(ARG_SECTION_NUMBER) - 1);
+            MyList myList = new MyList(list, activity, category);
+            myList.initFromURLGenerator(urlGenerator[category], MyList.NEW);
 
             return rootView;
         }

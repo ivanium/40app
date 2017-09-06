@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">40_郑远航</string>
     <string name="action_search">搜索</string>
+    <string name="action_favorites">收藏</string>
     <string name="action_settings">设置</string>
     <string name="night">夜间模式</string>
     <string name="no_image">无图模式</string>
@@ -16,4 +17,5 @@
     <string name="title_activity_news">NewsActivity</string>
     <string name="title_activity_search">SearchActivity</string>
     <string name="title_activity_settings">SettingsActivity</string>
+    <string name="title_activity_favorites">FavoritesActivity</string>
 </resources>

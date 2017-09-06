@@ -86,6 +86,7 @@ public class MyList {
 
     private void loadFromCache() {
         try {
+            newsList.clear();
             Cursor cursor = Global.dbCache.query(Global.LIST_CACHE, null, Global.LIST_CACHE_CAT + " = ?",
                     new String[]{String.valueOf(cacheID)}, null, null, Global.LIST_CACHE_ID);
             int cnt = cursor.getCount();
@@ -141,6 +142,8 @@ public class MyList {
                             else
                                 Toast.makeText(activity, R.string.no_result, Toast.LENGTH_SHORT).show();
                         }
+                        if (cacheID != -1)
+                            Global.isLoaded[cacheID] = true;
                     }
                     if (mode != NEW)
                         list.onRefreshComplete();
@@ -156,7 +159,6 @@ public class MyList {
             public void run() {
                 try {
                     String s = "";
-                    urlGenerator = _urlGenerator;
                     URL url;
                     if (mode == APPEND)
                         url = urlGenerator.nextPage();
@@ -188,7 +190,19 @@ public class MyList {
             }
         });
 
-        thread.start();
+        urlGenerator = _urlGenerator;
+        if ((cacheID != -1) && Global.isLoaded[cacheID] && (mode == NEW)) {
+            loadFromCache();
+            list.setMode(PullToRefreshBase.Mode.BOTH);
+        }
+        else thread.start();
+    }
+
+    public void clear() {
+        if (cacheID == -1) {
+            newsList.clear();
+            adapter.notifyDataSetChanged();
+        }
     }
 
 }
