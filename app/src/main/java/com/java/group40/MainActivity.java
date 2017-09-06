@@ -101,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
         for (int i = 0; i < 12; i++)
             if (!Global.isLoaded[i]) {
             String head = "http://166.111.68.66:2042/news/action/query/latest?pageNo=";
-            String tail = "&pageSize=" + Global.PAGE_SIZE + "&category=" + i;
+            String tail = "&pageSize=" + Global.PAGE_SIZE + "&category=" + (i + 1);
             urlGenerator[i] = new URLGenerator(head, tail);
             }
 
@@ -201,8 +201,8 @@ public class MainActivity extends AppCompatActivity {
             final PullToRefreshListView list = (PullToRefreshListView) rootView.findViewById(R.id.list);
             final Activity activity = this.getActivity();
 
-            int category = Global.catList.get(getArguments().getInt(ARG_SECTION_NUMBER) - 1) + 1;
-            MyList myList = new MyList(list, activity, category - 1);
+            int category = Global.catList.get(getArguments().getInt(ARG_SECTION_NUMBER) - 1);
+            MyList myList = new MyList(list, activity, category);
             myList.initFromURLGenerator(urlGenerator[category], MyList.NEW);
 
             return rootView;
