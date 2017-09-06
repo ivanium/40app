@@ -123,24 +123,29 @@ public class MyList {
                             jNewsList = jObject.getJSONArray("list");
                             if (mode != APPEND) {
                                 newsList.clear();
-                                Global.dbCache.delete(Global.LIST_CACHE, Global.LIST_CACHE_CAT + " = ?", new String[]{String.valueOf(cacheID)});
+                                if (cacheID != -1)
+                                    Global.dbCache.delete(Global.LIST_CACHE, Global.LIST_CACHE_CAT + " = ?", new String[]{String.valueOf(cacheID)});
                             }
                             for (int i = 0; i < jNewsList.length(); i++) {
                                 JSONObject jNews = jNewsList.getJSONObject(i);
                                 newsList.add(jNews);
-                                ContentValues val = new ContentValues();
-                                val.put(Global.LIST_CACHE_CAT, cacheID);
-                                val.put(Global.LIST_CACHE_ID, newsList.size() - 1);
-                                val.put(Global.LIST_CACHE_J_NEWS, jNews.toString());
-                                Global.dbCache.insert(Global.LIST_CACHE, null, val);
+                                if (cacheID != -1) {
+                                    ContentValues val = new ContentValues();
+                                    val.put(Global.LIST_CACHE_CAT, cacheID);
+                                    val.put(Global.LIST_CACHE_ID, newsList.size() - 1);
+                                    val.put(Global.LIST_CACHE_J_NEWS, jNews.toString());
+                                    Global.dbCache.insert(Global.LIST_CACHE, null, val);
+                                }
                             }
                             adapter.notifyDataSetChanged();
                         }
                         if (jNewsList.length() == 0) {
                             if (mode == APPEND)
                                 Toast.makeText(activity, R.string.no_more_result, Toast.LENGTH_SHORT).show();
-                            else
+                            else {
+                                clear();
                                 Toast.makeText(activity, R.string.no_result, Toast.LENGTH_SHORT).show();
+                            }
                         }
                         if (cacheID != -1)
                             Global.isLoaded[cacheID] = true;

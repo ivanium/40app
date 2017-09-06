@@ -53,13 +53,16 @@ public class MyAdapter extends BaseAdapter {
 
             JSONObject jNews = NewsList.get(position);
             String _time = jNews.getString("news_Time");
-            String year = _time.substring(0, 4);
-            String month = _time.substring(4, 6);
-            String day = _time.substring(6, 8);
-            String hour = _time.substring(8, 10);
-            String minute = _time.substring(10, 12);
-            String second = _time.substring(12, 14);
-            String time = year + '-' + month + '-' + day + ' ' + hour + ':' + minute + ':' + second;
+            String time = "";
+            if (_time.length() >= 14) {
+                String year = _time.substring(0, 4);
+                String month = _time.substring(4, 6);
+                String day = _time.substring(6, 8);
+                String hour = _time.substring(8, 10);
+                String minute = _time.substring(10, 12);
+                String second = _time.substring(12, 14);
+                time = year + '-' + month + '-' + day + ' ' + hour + ':' + minute + ':' + second;
+            }
 
             if (Global.getReadState(jNews))
                 newsTitle.setTextColor(Color.rgb(128, 128, 128));
