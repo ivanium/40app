@@ -42,6 +42,8 @@ public class Global{
     public static boolean voice;
     public static ArrayList<Integer> catList = new ArrayList<Integer>();
 
+    public static boolean isLoaded[] = {false, false, false, false, false, false, false, false, false, false, false ,false};
+
     public static SQLiteDatabase dbCache;
 
     public static void setCatList(int cat) {
