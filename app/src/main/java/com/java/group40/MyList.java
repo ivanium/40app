@@ -198,4 +198,11 @@ public class MyList {
         else thread.start();
     }
 
+    public void clear() {
+        if (cacheID == -1) {
+            newsList.clear();
+            adapter.notifyDataSetChanged();
+        }
+    }
+
 }

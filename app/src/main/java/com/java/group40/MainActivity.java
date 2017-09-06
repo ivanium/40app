@@ -17,7 +17,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 
@@ -124,8 +123,6 @@ public class MainActivity extends AppCompatActivity {
 
         mTabLayout = (TabLayout) findViewById(R.id.tabs);
         mTabLayout.setupWithViewPager(mViewPager);
-
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
     }
 
     @Override
@@ -156,6 +153,11 @@ public class MainActivity extends AppCompatActivity {
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_search) {
             Intent intent = new Intent(this, SearchActivity.class);
+            startActivity(intent);
+            return true;
+        }
+        else if (id == R.id.action_favorites) {
+            Intent intent = new Intent(this, FavoritesActivity.class);
             startActivity(intent);
             return true;
         }
