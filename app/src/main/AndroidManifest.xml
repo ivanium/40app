@@ -34,9 +34,13 @@
             android:label="@string/title_activity_settings"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
+            android:name=".ShareActivity"
+            android:label="ShareActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
             android:name=".FavoritesActivity"
             android:label="@string/title_activity_favorites"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
 </manifest>

@@ -158,6 +158,7 @@ public class MainActivity extends AppCompatActivity {
         }
         else if (id == R.id.action_favorites) {
             Intent intent = new Intent(this, FavoritesActivity.class);
+            intent.putExtra("page", "");
             startActivity(intent);
             return true;
         }

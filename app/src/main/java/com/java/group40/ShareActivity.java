@@ -6,24 +6,22 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.widget.TextView;
 
-public class FavoritesActivity extends AppCompatActivity {
+/**
+ * Created by ivanium on 2017/9/7.
+ */
+public class ShareActivity extends AppCompatActivity{
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_favorites);
+        setContentView(R.layout.activity_share);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         Intent intent = getIntent();
         String page = intent.getStringExtra("page");
-        //if favorate activity is atarted in the main activity, the page will equals ""
-        if(page.equals("")) {
-            page = "233";
-        }
+        System.out.println(page);
         TextView tv = (TextView) findViewById(R.id.text);
-
         tv.setText(page);
     }
-
 }

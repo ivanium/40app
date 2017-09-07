@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">40_郑远航</string>
     <string name="action_search">搜索</string>
+    <string name="action_share">分享</string>
     <string name="action_favorites">收藏</string>
     <string name="action_settings">设置</string>
     <string name="night">夜间模式</string>
