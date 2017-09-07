@@ -120,9 +120,11 @@ public class NewsActivity extends AppCompatActivity {
             startActivity(intent);
             return true;
         }
-        else if (id == R.id.action_search) {
-            Intent intent = new Intent(this, SearchActivity.class);
+        else if (id == R.id.action_favorites) {
+            Intent intent = new Intent(this, FavoritesActivity.class);
+            intent.putExtra("page", pageJson);
             startActivity(intent);
+            // TODO: 2017/9/7 is favorate flag
             return true;
         }
 
