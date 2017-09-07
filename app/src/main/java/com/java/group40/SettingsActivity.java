@@ -127,6 +127,8 @@ public class SettingsActivity extends AppCompatActivity {
                 File dirDatabase = new File(Global.DIR_CACHE);
                 if (dirDatabase.exists())
                     dirDatabase.delete();
+                for (int i = 0; i < 12; i++)
+                    Global.isLoaded[i] = false;
                 finish();
             }
         });
