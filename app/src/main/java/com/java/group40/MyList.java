@@ -144,7 +144,7 @@ public class MyList {
                                 Toast.makeText(activity, R.string.no_more_result, Toast.LENGTH_SHORT).show();
                             else {
                                 clear();
-                                Toast.makeText(activity, R.string.no_result, Toast.LENGTH_SHORT).show();
+                                //Toast.makeText(activity, R.string.no_result, Toast.LENGTH_SHORT).show();
                             }
                         }
                         if (cacheID != -1)
