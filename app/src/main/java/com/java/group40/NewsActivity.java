@@ -6,8 +6,13 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.method.ScrollingMovementMethod;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import android.view.Menu;
+import android.view.MenuItem;
+
 
 import org.json.JSONObject;
 
@@ -18,16 +23,30 @@ import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 
+
 public class NewsActivity extends AppCompatActivity {
 //    private static String newsTitle;
     private static final int CONNECT_SUCC = 1, CONNECT_ERROR = 2;
     private static String id;
     private String pageJson = null;
     private String news_Title = null;
-    private String news_Joural = null;
+    private String news_Journal = null;
     private String news_Author = null;
     private String news_Time = null;
     private String news_Content = null;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_news);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        getId();
+
+//        TextView text = (TextView) findViewById(R.id.text);
+        getPage();
+    }
 
     private void getId() {
         Intent intent = getIntent();
@@ -77,17 +96,37 @@ public class NewsActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_news);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_news, menu);
+        return true;
+    }
 
-        getId();
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
 
-//        TextView text = (TextView) findViewById(R.id.text);
-        getPage();
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_share) {
+            if(pageJson.equals(null)) {
+                // TODO: 2017/9/7 pop a warning toast.
+                return false;
+            }
+            Intent intent = new Intent(this, ShareActivity.class);
+            intent.putExtra("page", pageJson);
+            startActivity(intent);
+            return true;
+        }
+        else if (id == R.id.action_search) {
+            Intent intent = new Intent(this, SearchActivity.class);
+            startActivity(intent);
+            return true;
+        }
 
+        return super.onOptionsItemSelected(item);
     }
 
     private final void parseJson() {
@@ -95,7 +134,7 @@ public class NewsActivity extends AppCompatActivity {
             if(pageJson != null) {
                 JSONObject jPage = new JSONObject(pageJson);
                 news_Author = jPage.getString("news_Author");
-                news_Joural = jPage.getString("news_Journal");
+                news_Journal = jPage.getString("news_Journal");
                 news_Title = jPage.getString("news_Title");
                 news_Time = jPage.getString("news_Time");
                 news_Content = jPage.getString("news_Content");
@@ -127,10 +166,11 @@ public class NewsActivity extends AppCompatActivity {
 
                     TextView textView = (TextView) findViewById(R.id.text);
                     textView.setText(activity.news_Author + "\n" +
-                                activity.news_Joural + "\n" +
+                                activity.news_Journal + "\n" +
                                 activity.news_Title + "\n" +
                                 activity.news_Time + "\n" +
                                 activity.news_Content);
+                    textView.setMovementMethod(ScrollingMovementMethod.getInstance());
                 }
             } catch (Exception e) {
                 e.printStackTrace();
