@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.database.sqlite.*;
 import android.widget.BaseAdapter;
 
+import java.io.*;
 import java.util.ArrayList;
 
 import org.json.*;
@@ -34,6 +35,15 @@ public class Global{
     public static final String LIST_CACHE_ID = "id";
     public static final String LIST_CACHE_J_NEWS = "j_news";
 
+    public static final String NEWS_CACHE = "news_cache";
+    public static final String NEWS_CACHE_NEWS_ID = "news_id";
+    public static final String NEWS_CACHE_JSON = "json";
+
+    public static final String LIST_FAVORITES = "list_favorites";
+    public static final String LIST_FAVORITES_TIME = "time";
+    public static final String LIST_FAVORITES_NEWS_ID = "news_id";
+    public static final String LIST_FAVORITES_NEWS_TITLE = "news_title";
+
     public static final int PAGE_SIZE = 10;
 
     public static boolean newSettings = false;
@@ -51,6 +61,20 @@ public class Global{
         for (int i = 0; i < 12; i++)
             if ((cat & (1 << i)) != 0)
                 catList.add(i);
+    }
+
+    public static void initDatabase() {
+        File dirDatabase = new File(DIR_CACHE);
+        if (!dirDatabase.exists())
+            dirDatabase.mkdirs();
+        dbCache = SQLiteDatabase.openOrCreateDatabase(PATH_CACHE, null);
+        dbCache.execSQL("create table if not exists " + STATE_READ + "(" + STATE_READ_NEWS_ID + " varchar(50))");
+        dbCache.execSQL("create table if not exists " + LIST_CACHE + "(" + LIST_CACHE_CAT + " int, " +
+                LIST_CACHE_ID + " int, " + LIST_CACHE_J_NEWS + " nvarchar(4000))");
+        dbCache.execSQL("create table if not exists " + NEWS_CACHE + "(" + NEWS_CACHE_NEWS_ID + " varchar(50), " +
+                NEWS_CACHE_JSON + " text)");
+        dbCache.execSQL("create table if not exists " + LIST_FAVORITES + "(" + LIST_FAVORITES_TIME + " varchar(20), " +
+                LIST_FAVORITES_NEWS_ID + " varchar(50), " + LIST_FAVORITES_NEWS_TITLE + " nvarchar(200))");
     }
 
     public static boolean getReadState(JSONObject jNews) {
