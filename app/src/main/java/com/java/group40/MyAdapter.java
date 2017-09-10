@@ -47,6 +47,7 @@ public class MyAdapter extends BaseAdapter {
             if (convertView == null) {
                 convertView = mInflater.inflate(R.layout.view_adapter, null);
             }
+            TextView newsID = (TextView) convertView.findViewById(R.id.newsID);
             TextView newsTitle = (TextView) convertView.findViewById(R.id.newsTitle);
             TextView newsTime = (TextView) convertView.findViewById(R.id.newsTime);
             TextView newsSource = (TextView) convertView.findViewById(R.id.newsSource);
@@ -65,12 +66,15 @@ public class MyAdapter extends BaseAdapter {
             }
 
             if (Global.getReadState(jNews))
-                newsTitle.setTextColor(Color.rgb(128, 128, 128));
-            else if (Global.night)
+                newsTitle.setTextColor(newsTime.getTextColors().getDefaultColor());
+            else
+                newsTitle.setTextColor(newsID.getTextColors().getDefaultColor());
+            /*else if (Global.night)
                 newsTitle.setTextColor(Color.rgb(255, 255, 255));
             else
-                newsTitle.setTextColor(Color.rgb(0, 0, 0));
+                newsTitle.setTextColor(Color.rgb(0, 0, 0));*/
 
+            newsID.setText(jNews.getString("news_ID"));
             newsTitle.setText(jNews.getString("news_Title"));
             newsTime.setText(time);
             newsSource.setText(jNews.getString("news_Source"));

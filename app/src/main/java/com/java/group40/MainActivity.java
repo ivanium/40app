@@ -62,16 +62,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void initDatabase() {
-        File dirDatabase = new File(Global.DIR_CACHE);
-        if (!dirDatabase.exists())
-            dirDatabase.mkdirs();
-        Global.dbCache = SQLiteDatabase.openOrCreateDatabase(Global.PATH_CACHE, null);
-        Global.dbCache.execSQL("create table if not exists " + Global.STATE_READ + "(" + Global.STATE_READ_NEWS_ID + " varchar(50))");
-        Global.dbCache.execSQL("create table if not exists " + Global.LIST_CACHE + "(" + Global.LIST_CACHE_CAT + " int, " +
-                Global.LIST_CACHE_ID + " int, " + Global.LIST_CACHE_J_NEWS + " nvarchar(4000))");
-    }
-
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
      * fragments for each of the sections. We use a
@@ -95,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         importSettings();
-        initDatabase();
+        Global.initDatabase();
 
         for (int i = 0; i < 12; i++)
             if (!Global.isLoaded[i]) {
