@@ -4,14 +4,23 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.java.group40.MainActivity">
+
     <item
         android:id="@+id/action_favorites"
         android:orderInCategory="100"
         android:title="@string/action_favorites"
+        android:checkable="true"
         app:showAsAction="always" />
     <item
         android:id="@+id/action_share"
         android:orderInCategory="100"
         android:title="@string/action_share"
         app:showAsAction="always" />
+    <item
+        android:id="@+id/action_tts"
+        android:orderInCategory="100"
+        android:title="TTS"
+        app:showAsAction="always"
+        android:checkable="true"
+        />
 </menu>
