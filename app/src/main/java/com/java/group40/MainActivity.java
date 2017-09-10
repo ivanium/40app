@@ -24,6 +24,8 @@ import java.io.*;
 
 import org.json.*;
 
+import cn.sharesdk.framework.ShareSDK;
+
 public class MainActivity extends AppCompatActivity {
 
     private void importDefaultSettings() {
@@ -123,6 +125,7 @@ public class MainActivity extends AppCompatActivity {
 
         mTabLayout = (TabLayout) findViewById(R.id.tabs);
         mTabLayout.setupWithViewPager(mViewPager);
+        //ShareSDK.initSDK(this);
     }
 
     @Override
@@ -158,6 +161,7 @@ public class MainActivity extends AppCompatActivity {
         }
         else if (id == R.id.action_favorites) {
             Intent intent = new Intent(this, FavoritesActivity.class);
+            intent.putExtra("page", "");
             startActivity(intent);
             return true;
         }

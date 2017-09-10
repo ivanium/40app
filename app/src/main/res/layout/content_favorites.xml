@@ -8,4 +8,11 @@
     tools:context="com.java.group40.FavoritesActivity"
     tools:showIn="@layout/activity_favorites">
 
+    <TextView
+        android:id="@+id/text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TextView"
+        tools:layout_editor_absoluteY="0dp"
+        tools:layout_editor_absoluteX="0dp" />
 </android.support.constraint.ConstraintLayout>
