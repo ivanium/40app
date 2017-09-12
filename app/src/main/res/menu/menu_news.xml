@@ -9,18 +9,20 @@
         android:id="@+id/action_favorites"
         android:orderInCategory="100"
         android:title="@string/action_favorites"
+        android:icon="@drawable/ic_star_border_white_24dp"
         android:checkable="true"
         app:showAsAction="always" />
     <item
         android:id="@+id/action_share"
         android:orderInCategory="100"
         android:title="@string/action_share"
+        android:icon="@drawable/ic_share_white_24dp"
         app:showAsAction="always" />
     <item
         android:id="@+id/action_tts"
         android:orderInCategory="100"
         android:title="TTS"
+        android:icon="@drawable/ic_record_voice_over_white_24dp"
         app:showAsAction="always"
-        android:checkable="true"
-        />
+        android:checkable="true" />
 </menu>
