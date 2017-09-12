@@ -23,6 +23,8 @@ import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 
+import cn.sharesdk.onekeyshare.OnekeyShare;
+
 
 public class NewsActivity extends AppCompatActivity {
 //    private static String newsTitle;
@@ -34,6 +36,8 @@ public class NewsActivity extends AppCompatActivity {
     private String news_Author = null;
     private String news_Time = null;
     private String news_Content = null;
+    private String share_page;
+    private String share_news_Author,share_news_Journal,share_news_Title,share_news_Time,share_news_Content,share_news_Url;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -115,9 +119,11 @@ public class NewsActivity extends AppCompatActivity {
                 // TODO: 2017/9/7 pop a warning toast.
                 return false;
             }
+            share_page=pageJson;
+            showShare();/*
             Intent intent = new Intent(this, ShareActivity.class);
             intent.putExtra("page", pageJson);
-            startActivity(intent);
+            startActivity(intent);*/
             return true;
         }
         else if (id == R.id.action_favorites) {
@@ -178,5 +184,45 @@ public class NewsActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
         }
+    }
+    private void showShare() {
+        try {
+            if(share_page != null) {
+                JSONObject jPage = new JSONObject(share_page);
+                share_news_Author = jPage.getString("news_Author");
+                share_news_Journal = jPage.getString("news_Journal");
+                share_news_Title = jPage.getString("news_Title");
+                share_news_Time = jPage.getString("news_Time");
+                share_news_Content = jPage.getString("news_Content");
+                share_news_Url = jPage.getString("news_URL");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        //ShareSDK.initSDK(this);
+        OnekeyShare oks = new OnekeyShare();
+        //关闭sso授权
+        oks.disableSSOWhenAuthorize();
+        // title标题，印象笔记、邮箱、信息、微信、人人网、QQ和QQ空间使用
+        oks.setTitle(share_news_Title);
+        // titleUrl是标题的网络链接，仅在Linked-in,QQ和QQ空间使用
+        oks.setTitleUrl(share_news_Url);
+        // text是分享文本，所有平台都需要这个字段
+        oks.setText(share_news_Content);
+        //分享网络图片，新浪微博分享网络图片需要通过审核后申请高级写入接口，否则请注释掉测试新浪微博
+        oks.setImageUrl("http://f1.sharesdk.cn/imgs/2014/02/26/owWpLZo_638x960.jpg");
+        // imagePath是图片的本地路径，Linked-In以外的平台都支持此参数
+        //oks.setImagePath("/sdcard/test.jpg");//确保SDcard下面存在此张图片
+        // url仅在微信（包括好友和朋友圈）中使用
+        oks.setUrl(share_news_Url);
+        // comment是我对这条分享的评论，仅在人人网和QQ空间使用
+        oks.setComment(share_news_Title);
+        // site是分享此内容的网站名称，仅在QQ空间使用
+        oks.setSite("G_word");
+        // siteUrl是分享此内容的网站地址，仅在QQ空间使用
+        oks.setSiteUrl(share_news_Url);
+
+// 启动分享GUI
+        oks.show(this);
     }
 }
