@@ -185,12 +185,9 @@ public class MyList {
                     Message msg = handler.obtainMessage(CONNECTED, s);
                     handler.sendMessage(msg);
                 }
-                catch (SocketTimeoutException e) {
+                catch (Exception e) {
                     Message msg = handler.obtainMessage(CONNECT_ERROR, "");
                     handler.sendMessage(msg);
-                }
-                catch (Exception e) {
-                    e.printStackTrace();
                 }
             }
         });
