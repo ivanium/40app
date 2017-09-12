@@ -10,8 +10,11 @@
     <string name="category_manage">分类标签管理</string>
     <string name="empty_category_title">提示</string>
     <string name="empty_category">请至少选择一个分类。</string>
+    <string name="warning">警告</string>
+    <string name="warning_reset">此操作会删除所有个人设置、收藏和缓存。确定要进行此操作？</string>
     <string name="ok">确定</string>
-    <string name="reset_all">Reset All</string>
+    <string name="cancel">取消</string>
+    <string name="reset_all">全部重置</string>
     <string name="list_connection_failed">网络连接失败</string>
     <string name="no_result">无符合条件的结果</string>
     <string name="no_more_result">没有更多了</string>
