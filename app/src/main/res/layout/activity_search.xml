@@ -11,13 +11,35 @@
         android:layout_height="wrap_content"
         android:theme="@style/AppTheme.AppBarOverlay">
 
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
-            app:popupTheme="@style/AppTheme.PopupOverlay"
-            app:title="@string/action_search" />
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <EditText
+                android:id="@+id/editText_search"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_weight="1"
+                android:color="#FFFFFFFF"
+                android:ems="10"
+                android:hint="@string/action_search"
+                android:inputType="textPersonName"
+                android:maxLength="20"
+                android:paddingLeft="40dp" />
+
+            <ImageView
+                android:id="@+id/imageView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:foregroundGravity="center"
+                android:paddingLeft="17dp"
+                android:paddingTop="16dp"
+                app:srcCompat="@drawable/ic_search_white_24dp" />
+        </RelativeLayout>
 
     </android.support.design.widget.AppBarLayout>
 

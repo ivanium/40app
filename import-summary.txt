@@ -1,23 +1,44 @@
 ECLIPSE ANDROID PROJECT IMPORT SUMMARY
 ======================================
 
+ * Project
+   ShareSDK:D:\ShareSDK-Android-2.8.3-7f3e9044babbb1d78c870d21e9d73308\ShareSDK
+   for Android\Libs\MainLibs\.classpath:
+   Could not resolve source path src in project ShareSDK: ignored. The project
+   may not compile if the given source path provided source code.
+
+
 Ignored Files:
 --------------
 The following files were *not* copied into the new Gradle project; you
 should evaluate whether these are still needed in your project and if
 so manually move them:
 
-* LICENSE
-* pom.xml
+* build.xml
+* proguard-project.txt
 
 Moved Files:
 ------------
 Android Gradle projects use a different directory structure than ADT
 Eclipse projects. Here's how the projects were restructured:
 
-* AndroidManifest.xml => library\src\main\AndroidManifest.xml
-* res\ => library\src\main\res\
-* src\ => library\src\main\java\
+* AndroidManifest.xml => shareSDK\src\main\AndroidManifest.xml
+* libs\MobCommons-2017.0412.1554.jar => shareSDK\libs\MobCommons-2017.0412.1554.jar
+* libs\MobTools-2017.0412.1554.jar => shareSDK\libs\MobTools-2017.0412.1554.jar
+* libs\ShareSDK-Core-2.8.3.jar => shareSDK\libs\ShareSDK-Core-2.8.3.jar
+* libs\ShareSDK-Email-2.8.3.jar => shareSDK\libs\ShareSDK-Email-2.8.3.jar
+* libs\ShareSDK-Facebook-2.8.3.jar => shareSDK\libs\ShareSDK-Facebook-2.8.3.jar
+* libs\ShareSDK-QQ-2.8.3.jar => shareSDK\libs\ShareSDK-QQ-2.8.3.jar
+* libs\ShareSDK-QZone-2.8.3.jar => shareSDK\libs\ShareSDK-QZone-2.8.3.jar
+* libs\ShareSDK-ShortMessage-2.8.3.jar => shareSDK\libs\ShareSDK-ShortMessage-2.8.3.jar
+* libs\ShareSDK-SinaWeibo-2.8.3.jar => shareSDK\libs\ShareSDK-SinaWeibo-2.8.3.jar
+* libs\ShareSDK-TencentWeibo-2.8.3.jar => shareSDK\libs\ShareSDK-TencentWeibo-2.8.3.jar
+* libs\ShareSDK-Twitter-2.8.3.jar => shareSDK\libs\ShareSDK-Twitter-2.8.3.jar
+* libs\ShareSDK-Wechat-2.8.3.jar => shareSDK\libs\ShareSDK-Wechat-2.8.3.jar
+* libs\ShareSDK-Wechat-Core-2.8.3.jar => shareSDK\libs\ShareSDK-Wechat-Core-2.8.3.jar
+* libs\ShareSDK-Wechat-Favorite-2.8.3.jar => shareSDK\libs\ShareSDK-Wechat-Favorite-2.8.3.jar
+* libs\ShareSDK-Wechat-Moments-2.8.3.jar => shareSDK\libs\ShareSDK-Wechat-Moments-2.8.3.jar
+* res\ => shareSDK\src\main\res\
 
 Next Steps:
 -----------

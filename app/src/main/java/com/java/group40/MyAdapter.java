@@ -1,12 +1,19 @@
+/*
+Note: This source file provides an adapter for MyList.
+The tutorial of the implementation of adapters is from http://blog.csdn.net/tianshuguang/article/details/7344315
+ */
+
 package com.java.group40;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
 
@@ -18,11 +25,13 @@ import org.json.*;
 
 public class MyAdapter extends BaseAdapter {
 
+    private Context context;
     private LayoutInflater mInflater;
     private ArrayList<JSONObject> NewsList;
 
     public MyAdapter(Context context, ArrayList<JSONObject> Array) {
-        mInflater = LayoutInflater.from(context);
+        this.context = context;
+        mInflater = LayoutInflater.from(this.context);
         NewsList = Array;
     }
 
@@ -69,15 +78,23 @@ public class MyAdapter extends BaseAdapter {
                 newsTitle.setTextColor(newsTime.getTextColors().getDefaultColor());
             else
                 newsTitle.setTextColor(newsID.getTextColors().getDefaultColor());
-            /*else if (Global.night)
-                newsTitle.setTextColor(Color.rgb(255, 255, 255));
-            else
-                newsTitle.setTextColor(Color.rgb(0, 0, 0));*/
 
             newsID.setText(jNews.getString("news_ID"));
             newsTitle.setText(jNews.getString("news_Title"));
             newsTime.setText(time);
             newsSource.setText(jNews.getString("news_Source"));
+
+            ImageView newsImage = (ImageView) convertView.findViewById(R.id.newsImage);
+            String pics = jNews.getString("news_Pictures").trim();
+            if ((pics.length() > 0) && (!Global.noImage)) {
+                String pic[] = pics.split("[ ;,]");
+                Glide.with(context).load(pic[0]).placeholder(R.drawable.ic_image_gray_24dp).
+                        error(R.drawable.ic_broken_image_gray_24dp).fitCenter().into(newsImage);
+                newsImage.setVisibility(View.VISIBLE);
+            }
+            else
+                newsImage.setVisibility(View.GONE);
+
             return convertView;
         }
         catch (Exception e) {

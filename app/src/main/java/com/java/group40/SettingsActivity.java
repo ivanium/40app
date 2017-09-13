@@ -5,10 +5,14 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.Switch;
+
+import com.bumptech.glide.Glide;
 
 import java.io.*;
 
@@ -16,12 +20,16 @@ import org.json.*;
 
 public class SettingsActivity extends AppCompatActivity {
 
-    private CheckBox mNight;
-    private CheckBox mNoImage;
-    private CheckBox mVoice;
+    private Switch mNight;
+    private Switch mNoImage;
+    private Switch mVoice;
     private CheckBox mCat[] = new CheckBox[12];
     private Button mOK;
     private Button mResetAll;
+
+    /*
+    Note: The implementation of alert dialogs refers to https://www.oschina.net/question/54100_32486
+     */
 
     private void emptyCategory() {
         AlertDialog.Builder emptyCat = new AlertDialog.Builder(this);
@@ -34,6 +42,51 @@ public class SettingsActivity extends AppCompatActivity {
             }
         });
         emptyCat.create().show();
+    }
+
+    private void resetAll() {
+        Global.newSettings = true;
+        File fSettings = new File(Global.PATH_SETTINGS);
+        if (fSettings.exists())
+            fSettings.delete();
+        File fDatabase = new File(Global.PATH_CACHE);
+        if (fDatabase.exists())
+            fDatabase.delete();
+        File dirDatabase = new File(Global.DIR_CACHE);
+        if (dirDatabase.exists())
+            dirDatabase.delete();
+        for (int i = 0; i < 12; i++)
+            Global.isLoaded[i] = false;
+        final Context applicationContext = getApplicationContext();
+        Glide.get(applicationContext).clearMemory();
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Glide.get(applicationContext).clearDiskCache();
+            }
+        });
+        thread.start();
+        finish();
+    }
+
+    private void warningReset() {
+        AlertDialog.Builder warning = new AlertDialog.Builder(this);
+        warning.setTitle(R.string.warning);
+        warning.setMessage(R.string.warning_reset);
+        warning.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+                resetAll();
+            }
+        });
+        warning.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        warning.create().show();
     }
 
     private void exportSettings(int tempCat) {
@@ -65,9 +118,9 @@ public class SettingsActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        mNight = (CheckBox) findViewById(R.id.night);
-        mNoImage = (CheckBox) findViewById(R.id.noImage);
-        mVoice = (CheckBox) findViewById(R.id.voice);
+        mNight = (Switch) findViewById(R.id.night);
+        mNoImage = (Switch) findViewById(R.id.noImage);
+        mVoice = (Switch) findViewById(R.id.voice);
 
         mCat[0] = (CheckBox) findViewById(R.id.cat0);
         mCat[1] = (CheckBox) findViewById(R.id.cat1);
@@ -117,19 +170,7 @@ public class SettingsActivity extends AppCompatActivity {
         mResetAll.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Global.newSettings = true;
-                File fSettings = new File(Global.PATH_SETTINGS);
-                if (fSettings.exists())
-                    fSettings.delete();
-                File fDatabase = new File(Global.PATH_CACHE);
-                if (fDatabase.exists())
-                    fDatabase.delete();
-                File dirDatabase = new File(Global.DIR_CACHE);
-                if (dirDatabase.exists())
-                    dirDatabase.delete();
-                for (int i = 0; i < 12; i++)
-                    Global.isLoaded[i] = false;
-                finish();
+                warningReset();
             }
         });
     }

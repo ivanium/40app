@@ -1,3 +1,9 @@
+/*
+Note: The implementation of the list is based on an open-source library named pulltorefresh.
+The source code of pulltorefresh can be downloaded from https://github.com/chrisbanes/Android-PullToRefresh
+The tutorial is from http://www.cnblogs.com/tianzhijiexian/p/4023802.html
+ */
+
 package com.java.group40;
 
 import android.app.Activity;
@@ -44,7 +50,7 @@ public class MyList {
         list = _list;
         activity = _activity;
         cacheID = _cacheID;
-        newsList = new ArrayList<JSONObject>();
+        newsList = new ArrayList<>();
         if (cacheID != -1)
             loadFromCache();
         adapter = new MyAdapter(activity, newsList);
@@ -144,7 +150,6 @@ public class MyList {
                                 Toast.makeText(activity, R.string.no_more_result, Toast.LENGTH_SHORT).show();
                             else {
                                 clear();
-                                Toast.makeText(activity, R.string.no_result, Toast.LENGTH_SHORT).show();
                             }
                         }
                         if (cacheID != -1)
@@ -185,12 +190,9 @@ public class MyList {
                     Message msg = handler.obtainMessage(CONNECTED, s);
                     handler.sendMessage(msg);
                 }
-                catch (SocketTimeoutException e) {
+                catch (Exception e) {
                     Message msg = handler.obtainMessage(CONNECT_ERROR, "");
                     handler.sendMessage(msg);
-                }
-                catch (Exception e) {
-                    e.printStackTrace();
                 }
             }
         });
