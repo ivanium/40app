@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -54,7 +55,7 @@ public class FavoritesActivity extends AppCompatActivity implements View.OnClick
     private boolean isDeleteMode = false; //是否多选
     private Adapter adapter;
     private RelativeLayout layout;
-    private ImageView delete;
+    private FloatingActionButton delete;
 
     private Cursor offlineCursor;
     @Override
@@ -72,7 +73,7 @@ public class FavoritesActivity extends AppCompatActivity implements View.OnClick
     private void initView() {
         listview = (ListView) findViewById(R.id.list_view);
         layout = (RelativeLayout) findViewById(R.id.rll_view);
-        delete = (ImageView) findViewById(R.id.btn_delete);
+        delete = (FloatingActionButton) findViewById(R.id.btn_delete);
         adapter = new Adapter();
     }
 
