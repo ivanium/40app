@@ -1,2 +1,2 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merger version="3"><dataSet config="main"><source path="D:\40app\shareSDK\src\main\assets"/><source path="D:\40app\shareSDK\build\generated\assets\shaders\debug"/></dataSet><dataSet config="debug"><source path="D:\40app\shareSDK\src\debug\assets"/></dataSet></merger>
+<merger version="3"><dataSet config="main"><source path="D:\2016-2017-3\Java\FinalWithGit\40app\shareSDK\src\main\assets"/><source path="D:\2016-2017-3\Java\FinalWithGit\40app\shareSDK\build\generated\assets\shaders\debug"/></dataSet><dataSet config="debug"><source path="D:\2016-2017-3\Java\FinalWithGit\40app\shareSDK\src\debug\assets"/></dataSet></merger>

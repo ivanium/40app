@@ -2,7 +2,6 @@ package com.java.group40;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.database.sqlite.*;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -23,8 +22,6 @@ import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import java.io.*;
 
 import org.json.*;
-
-import cn.sharesdk.framework.ShareSDK;
 
 public class MainActivity extends AppCompatActivity {
 
