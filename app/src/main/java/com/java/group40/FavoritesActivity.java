@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.CheckBox;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
@@ -110,7 +111,7 @@ public class FavoritesActivity extends AppCompatActivity implements View.OnClick
                 isDeleteMode = true;
                 selectId.clear();
                 selectId.add(position);
-                layout.setVisibility(View.VISIBLE);
+                delete.setVisibility(View.VISIBLE);
                 adapter.notifyDataSetChanged();
                 return true;
             }
@@ -128,7 +129,7 @@ public class FavoritesActivity extends AppCompatActivity implements View.OnClick
     public void onBackPressed() {
         if (isDeleteMode) {
             isDeleteMode = false;
-            layout.setVisibility(View.INVISIBLE);
+            delete.setVisibility(View.INVISIBLE);
             adapter.notifyDataSetChanged();
         }else super.onBackPressed();
         //layout.setVisibility(View.VISIBLE);
@@ -152,7 +153,7 @@ public class FavoritesActivity extends AppCompatActivity implements View.OnClick
                 }
                 selectId.clear();
                 adapter.notifyDataSetChanged();
-                layout.setVisibility(View.GONE);
+                delete.setVisibility(View.GONE);
                 break;
             default:
                 break;

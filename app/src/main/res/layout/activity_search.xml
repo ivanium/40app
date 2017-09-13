@@ -11,14 +11,14 @@
         android:layout_height="wrap_content"
         android:theme="@style/AppTheme.AppBarOverlay">
 
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="horizontal">
+            android:layout_weight="1">
 
             <EditText
                 android:id="@+id/editText_search"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="56dp"
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="10dp"
@@ -30,7 +30,16 @@
                 android:maxLength="20"
                 android:paddingLeft="40dp" />
 
-        </LinearLayout>
+            <ImageView
+                android:id="@+id/imageView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:foregroundGravity="center"
+                android:paddingLeft="17dp"
+                android:paddingTop="16dp"
+                app:srcCompat="@drawable/ic_search_white_24dp" />
+        </RelativeLayout>
 
     </android.support.design.widget.AppBarLayout>
 

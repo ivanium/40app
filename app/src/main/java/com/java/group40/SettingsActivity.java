@@ -5,10 +5,12 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.Switch;
 
 import com.bumptech.glide.Glide;
 
@@ -18,9 +20,9 @@ import org.json.*;
 
 public class SettingsActivity extends AppCompatActivity {
 
-    private CheckBox mNight;
-    private CheckBox mNoImage;
-    private CheckBox mVoice;
+    private Switch mNight;
+    private Switch mNoImage;
+    private Switch mVoice;
     private CheckBox mCat[] = new CheckBox[12];
     private Button mOK;
     private Button mResetAll;
@@ -112,9 +114,9 @@ public class SettingsActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        mNight = (CheckBox) findViewById(R.id.night);
-        mNoImage = (CheckBox) findViewById(R.id.noImage);
-        mVoice = (CheckBox) findViewById(R.id.voice);
+        mNight = (Switch) findViewById(R.id.night);
+        mNoImage = (Switch) findViewById(R.id.noImage);
+        mVoice = (Switch) findViewById(R.id.voice);
 
         mCat[0] = (CheckBox) findViewById(R.id.cat0);
         mCat[1] = (CheckBox) findViewById(R.id.cat1);

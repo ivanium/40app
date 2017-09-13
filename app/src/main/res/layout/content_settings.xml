@@ -27,108 +27,130 @@
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp">
 
-        <CheckBox
+        <Switch
             android:id="@+id/night"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/night"
             tools:layout_editor_absoluteX="0dp"
-            tools:layout_editor_absoluteY="0dp" />
+            tools:layout_editor_absoluteY="0dp"
+            android:textSize="15dp"
+            android:padding="10dp"/>
 
-        <CheckBox
+        <Switch
             android:id="@+id/noImage"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/no_image" />
+            android:text="@string/no_image"
+            android:textSize="15dp"
+            android:padding="10dp" />
 
-        <CheckBox
+        <Switch
             android:id="@+id/voice"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/voice" />
+            android:text="@string/voice"
+            android:textSize="15dp"
+            android:padding="10dp" />
 
         <TextView
             android:id="@+id/categoryManage"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/category_manage" />
+            android:text="@string/category_manage"
+            android:paddingTop="10dp"
+            android:paddingBottom="5dp" />
 
         <GridLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:columnCount="4">
+            android:columnCount="4"
+            android:layout_gravity="center"
+            android:layout_margin="5dp">
 
             <CheckBox
                 android:id="@+id/cat0"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="CheckBox" />
+                android:text="CheckBox"
+                android:gravity="center" />
 
             <CheckBox
                 android:id="@+id/cat1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="CheckBox" />
+                android:text="CheckBox"
+                android:gravity="center" />
 
             <CheckBox
                 android:id="@+id/cat2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="CheckBox" />
+                android:text="CheckBox"
+                android:gravity="center" />
 
             <CheckBox
                 android:id="@+id/cat3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="CheckBox" />
+                android:text="CheckBox"
+                android:gravity="center" />
 
             <CheckBox
                 android:id="@+id/cat4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="CheckBox" />
+                android:text="CheckBox"
+                android:gravity="center" />
 
             <CheckBox
                 android:id="@+id/cat5"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="CheckBox" />
+                android:text="CheckBox"
+                android:gravity="center" />
 
             <CheckBox
                 android:id="@+id/cat6"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="CheckBox" />
+                android:text="CheckBox"
+                android:gravity="center" />
 
             <CheckBox
                 android:id="@+id/cat7"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="CheckBox" />
+                android:text="CheckBox"
+                android:gravity="center" />
 
             <CheckBox
                 android:id="@+id/cat8"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="CheckBox" />
+                android:text="CheckBox"
+                android:gravity="center" />
 
             <CheckBox
                 android:id="@+id/cat9"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="CheckBox" />
+                android:text="CheckBox"
+                android:gravity="center" />
 
             <CheckBox
                 android:id="@+id/cat10"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="CheckBox" />
+                android:text="CheckBox"
+                android:gravity="center" />
 
             <CheckBox
                 android:id="@+id/cat11"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="CheckBox" />
+                android:text="CheckBox"
+                android:gravity="center" />
 
         </GridLayout>
 
