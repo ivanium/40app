@@ -12,7 +12,7 @@ import android.view.MenuItem;
 
 import org.json.JSONObject;
 
-import cn.sharesdk.onekeyshare.*;
+import cn.sharesdk.onekeyshare.OnekeyShare;
 
 /**
  * Created by ivanium on 2017/9/7.

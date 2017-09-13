@@ -1,2 +1,2 @@
-include ':app', 'OneKeyShare', ':shareSDK'
+include ':app', ':shareSDK'
 include ':library'
