@@ -35,10 +35,15 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class NewsActivity extends AppCompatActivity {
     private static final String TAG = "nadebug";
@@ -52,6 +57,7 @@ public class NewsActivity extends AppCompatActivity {
     private String news_Time = null;
     private String news_raw_text = null;
     private ArrayList<String> news_people_and_location = null;
+    private ArrayList<String> news_Keywords = null;
     private ArrayList<String> news_Content = null;
     private ArrayList<String> news_pic_urls = null ;
     private SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
@@ -59,7 +65,7 @@ public class NewsActivity extends AppCompatActivity {
 
     private Thread getPageThread = null;
 
-    private SpeechSynthesizer newsSpeechSynthesizer;
+    private SpeechSynthesizer newsSpeechSynthesizer = null;
 
     private Cursor offlineCursor;
 
@@ -81,6 +87,14 @@ public class NewsActivity extends AppCompatActivity {
             initSpeechSynthesizer();
         getPage();
         linkDecorate();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(newsSpeechSynthesizer != null) {
+            newsSpeechSynthesizer.stopSpeaking();
+        }
+        super.onBackPressed();
     }
 
     private void initSpeechSynthesizer() {
@@ -201,9 +215,15 @@ public class NewsActivity extends AppCompatActivity {
                 try {
                     getPageThread.join();
                     String raw_content = news_raw_text;
-                    Log.e(TAG, "baike is running!"+news_people_and_location);
+                    Collections.sort(news_people_and_location, new Comparator<String>() {
+                        @Override
+                        public int compare(String o1, String o2) {
+                            return (o1.length() > o2.length() ? 1 : -1);
+                        }
+                    });
+//                    Log.e(TAG, "baike is running!"+news_people_and_location);
                     for (String key : news_people_and_location) {
-                        Log.e(TAG, "key="+key);
+//                        Log.e(TAG, "key="+key);
                         if (testKeyValid(key)) {
                             raw_content = raw_content.replaceAll(key, "<a href=\"https://baike.baidu.com/item/" + key + "\">" + key + "</a>");
                         }
@@ -214,7 +234,7 @@ public class NewsActivity extends AppCompatActivity {
                     Message msg = rhandler.obtainMessage(CONNECT_SUCC, "");
                     rhandler.sendMessage(msg);
                 } catch (Exception e) {
-                    Log.e(TAG, "baike is fucked");
+//                    Log.e(TAG, "baike is fucked");
                     e.printStackTrace();
                 }
             }
@@ -309,6 +329,10 @@ public class NewsActivity extends AppCompatActivity {
                 String[] people_and_location = (jPage.getString("persons")
                         + jPage.getString("locations")).replaceAll("[^\\u4e00-\\u9fa5]+", " ").trim().split(" ");
                 news_people_and_location = new ArrayList<>(Arrays.asList(people_and_location));
+
+                String[] raw_keywords = jPage.getString("Keywords").replaceAll("[^\\u4e00-\\u9fa5]+", " ").trim().split(" ");
+                news_Keywords = new ArrayList<>(Arrays.asList(raw_keywords));
+
                 news_raw_text = jPage.getString("news_Content").replaceAll("[ 　]+([ 　]{2,}|\\t)", "\n　　");
 //                analyseContent();
                 news_Content = new ArrayList<>(Arrays.asList(news_raw_text.split("\n")));
@@ -351,6 +375,8 @@ public class NewsActivity extends AppCompatActivity {
 
     private class PageGetterHandler extends Handler {
         NewsActivity activity;
+        int textColor;
+
         PageGetterHandler(NewsActivity nActivity) {
             activity = nActivity;
         }
@@ -390,6 +416,8 @@ public class NewsActivity extends AppCompatActivity {
 
             TextView titleTextView = (TextView) findViewById(R.id.newsActivityTitle);
             titleTextView.setText(activity.news_Title);
+            textColor = titleTextView.getCurrentTextColor();
+
             TextView infoTextView = (TextView) findViewById(R.id.newsActivityInfo);
             infoTextView.setText(activity.news_Author + "\t\t" + activity.news_Journal + "\t\t" + activity.news_Time);
 
@@ -404,7 +432,9 @@ public class NewsActivity extends AppCompatActivity {
                 }
             }
             else if(pic_num == 0) {
-                // TODO: 2017/9/9 add auto-find picture
+                if(autoImage()) {
+                    linearLayout.addView(createImageView(news_pic_urls.get(0), params));
+                }
                 for (String text : news_Content) {
                     linearLayout.addView(createTextView(text, params));
                 }
@@ -430,19 +460,69 @@ public class NewsActivity extends AppCompatActivity {
         private TextView createTextView(String text, ViewGroup.LayoutParams params) {
             TextView tv = new TextView(activity);
             tv.setLayoutParams(params);
-//            tv.setTextSize(R.dimen.news_content_font_size);
-//            tv.setTextScaleX(1.2f);
+
             tv.setCompoundDrawablePadding(10);
             tv.setText(Html.fromHtml(text));
-            tv.setPadding(20, 0, 20, 0);
+
+            tv.setTextColor(textColor);
+            tv.setTextSize(16);
+            tv.setPadding(20, 0, 20, 15);
+            tv.setCompoundDrawablePadding(5);
+            tv.setLineSpacing(0, 1.2f);
             tv.setMovementMethod(LinkMovementMethod.getInstance());
             return tv;
         }
         private ImageView createImageView(String img_url, ViewGroup.LayoutParams params) {
             ImageView iv = new ImageView(activity);
             iv.setLayoutParams(params);
+//            iv.setPadding(10, 10, 10, 10);
+//            iv.setPadding(0, 0, 0, 5);
             Glide.with(activity).load(img_url).into(iv);
             return iv;
+        }
+
+        private boolean autoImage() {
+            try {
+                if(news_Keywords.size() == 0) {
+                    return false;
+                }
+                String key = (news_Keywords.size() == 1 ? news_Keywords.get(0) : news_Keywords.get(0) + "+"+news_Keywords.get(1));
+                Log.e(TAG, "autoImage: key = " + key);
+                URL pageUrl = new URL("https://api.cognitive.microsoft.com/bing/v5.0/search?q=" + URLEncoder.encode(key, "UTF-8")+"&responseFilter=images&mkt=zn-ch");
+                HttpURLConnection conn = (HttpURLConnection) pageUrl.openConnection();
+                conn.addRequestProperty("Ocp-Apim-Subscription-Key", "33bd2c69ff8a48f29a9e98e7ef8af5b7");
+                conn.setRequestMethod("GET");
+                conn.setConnectTimeout(5000);
+                conn.setReadTimeout(5000);
+
+                if (conn.getResponseCode() == 200) {
+                    InputStream __netIn = conn.getInputStream();
+                    InputStreamReader _netIn = new InputStreamReader(__netIn);
+                    BufferedReader netIn = new BufferedReader(_netIn);
+                    String pageFullContent = netIn.readLine();
+                    JSONObject autoImageJson = new JSONObject(pageFullContent);
+                    String pic_json = autoImageJson.getString("image");
+                    JSONObject picJson = new JSONObject(pic_json);
+                    String pics_urls = picJson.getString("value");
+                    Pattern p = Pattern.compile("\"contentUrl\":\"(.*)\"");
+                    Matcher m = p.matcher(pics_urls);
+                    String pic_url = null;
+                    if(m.find()) {
+                        pic_url = m.group(1);
+                    }
+
+                    if(pic_url != null) {
+                        news_pic_urls.add(pic_url);
+                    }
+                    netIn.close();
+                    _netIn.close();
+                    __netIn.close();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                return false;
+            }
+            return true;
         }
     }
 
@@ -455,15 +535,13 @@ public class NewsActivity extends AppCompatActivity {
         @Override
         public void handleMessage(Message msg) {
             try {
-                setView();
-                Log.e(TAG, "after set view");
+                refreshView();
             } catch (Exception e) {
-                Log.e(TAG, "rhandler exception");
                 e.printStackTrace();
             }
         }
 
-        private void setView() {
+        private void refreshView() {
             LinearLayout llyt = (LinearLayout) findViewById(R.id.newsActivityLinearLayout);
 
             int pic_num = news_pic_urls.size();
