@@ -8,76 +8,34 @@
     tools:context="com.java.group40.NewsActivity"
     tools:showIn="@layout/activity_news">
 
-    <!--<Button-->
-        <!--android:id="@+id/voiceButton"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:text="朗读"-->
-        <!--tools:layout_editor_absoluteX="8dp"-->
-        <!--tools:layout_editor_absoluteY="0dp" />-->
-
     <ScrollView
         android:id="@+id/scrollView2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingLeft="8dp"
-        android:paddingRight="8dp"
         android:fadingEdge="vertical"
+        android:fadingEdgeLength="20dp"
         android:scrollbars="vertical"
-        app:layout_constraintLeft_toLeftOf="parent"
-        tools:layout_editor_absoluteY="5dp">
-        <!--android:layout_marginStart="8dp"-->
-        <!--android:layout_marginLeft="8dp"-->
-        <!--android:layout_marginStart="8dp"-->
-        <!--android:layout_marginLeft="8dp"-->
-        <!--android:layout_marginRight="8dp"-->
-        <!--tools:layout_editor_absoluteY="8dp"-->
-
-
-        <!--<GridLayout-->
-        <!--android:layout_width="395dp"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:columnCount="1"-->
-        <!--android:gravity="center"-->
-        <!--android:stretchMode="columnWidth"-->
-        <!--tools:layout_editor_absoluteX="8dp"-->
-        <!--tools:layout_editor_absoluteY="20dp">-->
-
-        <!--<ImageView-->
-        <!--android:id="@+id/image"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--tools:layout_editor_absoluteX="8dp"-->
-        <!--tools:layout_editor_absoluteY="8dp" />-->
-
-        <!--<TextView-->
-        <!--android:id="@+id/text"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:drawablePadding="10dp"-->
-        <!--android:paddingLeft="20dp"-->
-        <!--android:paddingRight="20dp"-->
-        <!--android:text="TextView"-->
-        <!--tools:layout_editor_absoluteX="0dp"-->
-        <!--tools:layout_editor_absoluteY="0dp" />-->
-        <!--</GridLayout>-->
+        android:paddingBottom="10dp">
 
         <LinearLayout
             android:id="@+id/newsActivityLinearLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            tools:layout_editor_absoluteX="8dp"
-            tools:layout_editor_absoluteY="8dp">
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="18dp"
+            android:layout_marginLeft="12dp"
+            android:layout_marginRight="12dp">
             <!--android:weightSum="1"-->
 
             <TextView
                 android:id="@+id/newsActivityTitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingLeft="20dp"
-                android:paddingRight="20dp"
-                android:textSize="20sp"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:textColor="?attr/actionMenuTextColor"
+                android:textSize="22sp"
                 android:textStyle="bold" />
 
             <TextView
@@ -86,6 +44,7 @@
                 android:layout_height="wrap_content"
                 android:paddingLeft="20dp"
                 android:paddingRight="20dp"
+                android:textColor="@android:color/darker_gray"
                 android:textSize="12sp" />
 
             <!--<ImageView-->

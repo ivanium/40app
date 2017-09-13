@@ -21,7 +21,7 @@
     <string name="title_activity_search">SearchActivity</string>
     <string name="title_activity_settings">SettingsActivity</string>
     <string name="title_activity_favorites">FavoritesActivity</string>
-    <string name="delete_favorite_item">已刪除</string>
+    <string name="delete_favorite_item">已删除</string>
     <string name="add_favorite_item">已添加</string>
     <string name="voice_is_off">您尚未开启语音播报功能</string>
     <string name="void_page">当前页面为空，无法收藏</string>
