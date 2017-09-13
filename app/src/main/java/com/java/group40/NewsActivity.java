@@ -338,7 +338,13 @@ public class NewsActivity extends AppCompatActivity {
                 news_Content = new ArrayList<>(Arrays.asList(news_raw_text.split("\n")));
 
                 String[] pic_urls = jPage.getString("news_Pictures").trim().split("[ ;,]");
-                news_pic_urls = new ArrayList<>(Arrays.asList(pic_urls));
+//                if(pic_urls.length == 1 && pic_urls[0].equals("")) {
+//                    news_pic_urls = new ArrayList<>();
+//                }
+//                else {
+                    news_pic_urls = new ArrayList<>(Arrays.asList(pic_urls));
+//                }
+
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -432,9 +438,9 @@ public class NewsActivity extends AppCompatActivity {
                 }
             }
             else if(pic_num == 0) {
-                if(autoImage()) {
-                    linearLayout.addView(createImageView(news_pic_urls.get(0), params));
-                }
+//                if(autoImage()) {
+//                    linearLayout.addView(createImageView(news_pic_urls.get(0), params));
+//                }
                 for (String text : news_Content) {
                     linearLayout.addView(createTextView(text, params));
                 }
