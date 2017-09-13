@@ -1,7 +1,9 @@
 package com.java.group40;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -20,6 +22,7 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 /*
 public class FavoritesActivity extends AppCompatActivity {
@@ -45,13 +48,14 @@ public class FavoritesActivity extends AppCompatActivity {
 }*/
 public class FavoritesActivity extends AppCompatActivity implements View.OnClickListener {
     private ListView listview;
-    private List<String> mContent = new ArrayList<>();
+    private List<myInfo> info = new ArrayList<>();
     private List<Integer> selectId = new ArrayList<>();
     private boolean isDeleteMode = false; //是否多选
     private Adapter adapter;
     private RelativeLayout layout;
     private ImageView delete;
 
+    private Cursor offlineCursor;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,18 +76,32 @@ public class FavoritesActivity extends AppCompatActivity implements View.OnClick
     }
 
     private void initDatas() {
-        for (int i = 0; i < 20; i++) {
-            mContent.add("orzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzyh" + i);
+        offlineCursor = Global.dbCache.rawQuery("select * from "+ Global.LIST_FAVORITES , null);
+        offlineCursor.moveToFirst();
+
+        info.clear();
+        for (int i = 0; i < offlineCursor.getCount(); i++) {
+            final myInfo save=new myInfo();
+            save.time=offlineCursor.getString(0);
+            save.id=offlineCursor.getString(1);
+            save.title=offlineCursor.getString(2);
+            info.add(save);
+            offlineCursor.move(1);
         }
+        Collections.sort(info);
     }
 
     private void initEvent() {
         listview.setAdapter(adapter);
         delete.setOnClickListener(this);
+        final Activity activity = this;
         listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Toast.makeText(FavoritesActivity.this, "被点击了", Toast.LENGTH_SHORT).show();
+            public void onItemClick(AdapterView<?> parent, View view, int position, long idd) {
+                Intent intent = new Intent(activity, NewsActivity.class);
+                intent.putExtra("id", info.get((int) idd).id);
+                activity.startActivity(intent);
+                //Toast.makeText(FavoritesActivity.this, "被点击了", Toast.LENGTH_SHORT).show();
             }
         });
         listview.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
@@ -93,11 +111,28 @@ public class FavoritesActivity extends AppCompatActivity implements View.OnClick
                 selectId.clear();
                 selectId.add(position);
                 layout.setVisibility(View.VISIBLE);
+                adapter.notifyDataSetChanged();
                 return true;
             }
         });
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        initDatas();
+        initEvent();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (isDeleteMode) {
+            isDeleteMode = false;
+            layout.setVisibility(View.INVISIBLE);
+            adapter.notifyDataSetChanged();
+        }else super.onBackPressed();
+        //layout.setVisibility(View.VISIBLE);
+    }
 
     public void onClick(View v) {
         // TODO Auto-generated method stub
@@ -109,11 +144,11 @@ public class FavoritesActivity extends AppCompatActivity implements View.OnClick
                 for (int i = 0; i < select.length; i++) {
                     Log.d("tag",select[i]+"****************");
                 }
-
                 for (int i = select.length-1; i>=0 ; i--) {
-                    mContent.remove((int)select[i]);
-                    Log.d("tag","移除了"+select[i]);
-
+                    Global.dbCache.delete(Global.LIST_FAVORITES, Global.LIST_FAVORITES_NEWS_ID+"=?", new String[] {info.get(select[i]).id});
+                }
+                for (int i = select.length-1; i>=0 ; i--) {
+                    info.remove((int) select[i]);
                 }
                 selectId.clear();
                 adapter.notifyDataSetChanged();
@@ -129,11 +164,11 @@ public class FavoritesActivity extends AppCompatActivity implements View.OnClick
         private LayoutInflater inflater = null;
 
         public int getCount() {
-            return mContent.size();
+            return info.size();
         }
 
         public Object getItem(int position) {
-            return mContent.get(position);
+            return info.get(position);
         }
 
         public long getItemId(int position) {
@@ -146,13 +181,17 @@ public class FavoritesActivity extends AppCompatActivity implements View.OnClick
                 convertView = View.inflate(FavoritesActivity.this, R.layout.item_favorites, null);
                 holder = new ViewHolder();
                 holder.content = (TextView) convertView.findViewById(R.id.txtName);
+                holder.time = (TextView) convertView.findViewById(R.id.txtTime);
                 holder.check = (CheckBox) convertView.findViewById(R.id.check);
                 convertView.setTag(holder);
             } else {
                 holder = (ViewHolder) convertView.getTag();
             }
-            final String content = mContent.get(position);
+            final String content = info.get(position).title;
+            final String stime = info.get(position).time;
+            final String ftime = "收藏时间："+stime.substring(0,4)+"-"+stime.substring(4,6)+"-"+stime.substring(6,8)+" "+stime.substring(8,10)+":"+stime.substring(10,12)+":"+stime.substring(12,14);
             holder.content.setText(content);
+            holder.time.setText(ftime);
             holder.check.setChecked(false);
             if (selectId.contains(position)){
                 holder.check.setChecked(true);
@@ -182,7 +221,18 @@ public class FavoritesActivity extends AppCompatActivity implements View.OnClick
 
         class ViewHolder {
             TextView content;
+            TextView time;
             CheckBox check;
+        }
+    }
+    class myInfo implements Comparable<myInfo>{
+        String title;
+        String time;
+        String id;
+        @Override
+        public int compareTo(myInfo o) {
+            int res=this.time.compareTo(o.time);
+            return -res;
         }
     }
 }

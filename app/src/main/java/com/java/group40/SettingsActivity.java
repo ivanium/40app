@@ -10,6 +10,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 
+import com.bumptech.glide.Glide;
+
 import java.io.*;
 
 import org.json.*;
@@ -34,6 +36,51 @@ public class SettingsActivity extends AppCompatActivity {
             }
         });
         emptyCat.create().show();
+    }
+
+    private void resetAll() {
+        Global.newSettings = true;
+        File fSettings = new File(Global.PATH_SETTINGS);
+        if (fSettings.exists())
+            fSettings.delete();
+        File fDatabase = new File(Global.PATH_CACHE);
+        if (fDatabase.exists())
+            fDatabase.delete();
+        File dirDatabase = new File(Global.DIR_CACHE);
+        if (dirDatabase.exists())
+            dirDatabase.delete();
+        for (int i = 0; i < 12; i++)
+            Global.isLoaded[i] = false;
+        final Context applicationContext = getApplicationContext();
+        Glide.get(applicationContext).clearMemory();
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Glide.get(applicationContext).clearDiskCache();
+            }
+        });
+        thread.start();
+        finish();
+    }
+
+    private void warningReset() {
+        AlertDialog.Builder warning = new AlertDialog.Builder(this);
+        warning.setTitle(R.string.warning);
+        warning.setMessage(R.string.warning_reset);
+        warning.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+                resetAll();
+            }
+        });
+        warning.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        warning.create().show();
     }
 
     private void exportSettings(int tempCat) {
@@ -117,19 +164,7 @@ public class SettingsActivity extends AppCompatActivity {
         mResetAll.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Global.newSettings = true;
-                File fSettings = new File(Global.PATH_SETTINGS);
-                if (fSettings.exists())
-                    fSettings.delete();
-                File fDatabase = new File(Global.PATH_CACHE);
-                if (fDatabase.exists())
-                    fDatabase.delete();
-                File dirDatabase = new File(Global.DIR_CACHE);
-                if (dirDatabase.exists())
-                    dirDatabase.delete();
-                for (int i = 0; i < 12; i++)
-                    Global.isLoaded[i] = false;
-                finish();
+                warningReset();
             }
         });
     }

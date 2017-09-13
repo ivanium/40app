@@ -1,18 +1,31 @@
 package com.java.group40;
 
+import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.method.ScrollingMovementMethod;
+import android.text.Html;
+import android.text.method.LinkMovementMethod;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import android.view.Menu;
-import android.view.MenuItem;
-
+import com.bumptech.glide.Glide;
+import com.iflytek.cloud.InitListener;
+import com.iflytek.cloud.SpeechConstant;
+import com.iflytek.cloud.SpeechError;
+import com.iflytek.cloud.SpeechSynthesizer;
+import com.iflytek.cloud.SpeechUtility;
+import com.iflytek.cloud.SynthesizerListener;
 
 import org.json.JSONObject;
 
@@ -22,75 +35,189 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
 import java.net.URL;
-
 import cn.sharesdk.onekeyshare.OnekeyShare;
-
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
 
 public class NewsActivity extends AppCompatActivity {
-//    private static String newsTitle;
-    private static final int CONNECT_SUCC = 1, CONNECT_ERROR = 2;
-    private static String id;
+    private static final String TAG = "nadebug";
+
+    private static final int OFFLINE = 0, CONNECT_SUCC = 1, CONNECT_ERROR = 2;
+    private String news_id;
     private String pageJson = null;
     private String news_Title = null;
     private String news_Journal = null;
     private String news_Author = null;
     private String news_Time = null;
-    private String news_Content = null;
     private String share_page;
     private String share_news_Author,share_news_Journal,share_news_Title,share_news_Time,share_news_Content,share_news_Url;
+    private String news_raw_text = null;
+    private ArrayList<String> news_people_and_location = null;
+    private ArrayList<String> news_Content = null;
+    private ArrayList<String> news_pic_urls = null ;
+    private SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+
+
+    private Thread getPageThread = null;
+
+    private SpeechSynthesizer newsSpeechSynthesizer;
+
+    private Cursor offlineCursor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_news);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        getId();
-
-//        TextView text = (TextView) findViewById(R.id.text);
-        getPage();
-    }
-
-    private void getId() {
         Intent intent = getIntent();
-        this.id = intent.getStringExtra("id");
+        this.news_id = intent.getStringExtra("id");
+        Log.e("news_id:", news_id);
+
+        offlineCursor = Global.dbCache.rawQuery("select * from "+ Global.NEWS_CACHE +" where "+ Global.NEWS_CACHE_NEWS_ID +"=?", new String[] {news_id});
+
+        if(Global.voice)
+            initSpeechSynthesizer();
+        getPage();
+        linkDecorate();
     }
+
+    private void initSpeechSynthesizer() {
+        SpeechUtility.createUtility(this, SpeechConstant.APPID +"=59b3bff8"); //
+        newsSpeechSynthesizer = SpeechSynthesizer.createSynthesizer(this, new InitListener() {
+            @Override
+            public void onInit(int code) {
+                Log.d("newsSynthesizer:", "InitListener init() code = " + code);
+            }
+        });
+        newsSpeechSynthesizer.setParameter(SpeechConstant.VOICE_NAME,"xiaoyan");
+        newsSpeechSynthesizer.setParameter(SpeechConstant.PITCH,"50");
+        newsSpeechSynthesizer.setParameter(SpeechConstant.VOLUME,"50");
+        newsSpeechSynthesizer.stopSpeaking();
+//        newsSpeechSynthesizer.startSpeaking("农夫山泉维他命水为您朗读：膜拜航爷！", newsTtsListener);
+    }
+
+    private SynthesizerListener newsTtsListener = new SynthesizerListener() {
+        @Override
+        public void onEvent(int arg0, int arg1, int arg2, Bundle arg3) {}
+        @Override
+        public void onSpeakBegin() {}
+        @Override
+        public void onSpeakPaused() {}
+        @Override
+        public void onSpeakResumed() {}
+        @Override
+        public void onBufferProgress(int percent, int beginPos, int endPos,
+                                     String info) {}
+        @Override
+        public void onSpeakProgress(int percent, int beginPos, int endPos) {}
+
+        @Override
+        public void onCompleted(SpeechError error) {
+            if(error!=null)
+            {
+                Log.d("Synthesizer err:", error.getErrorCode()+"");
+            }
+            else
+            {
+                Log.d("Synthesizer complete:", "0");
+            }
+        }
+    };
 
     private void getPage() {
         final PageGetterHandler pHandler = new PageGetterHandler(this);
+        if(offlineCursor.getCount() == 0) {// load content from web
+            getPageThread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+//                    String pageFullContent = null;
+                    try {
+                        String head = "http://166.111.68.66:2042/news/action/query/detail?newsId=";
+                        URL pageUrl = new URL(head + news_id);
+
+                        HttpURLConnection conn = (HttpURLConnection) pageUrl.openConnection();
+                        conn.setConnectTimeout(5000);
+                        conn.setReadTimeout(5000);
+
+                        if (conn.getResponseCode() == 200) {
+                            InputStream __netIn = conn.getInputStream();
+                            InputStreamReader _netIn = new InputStreamReader(__netIn);
+                            BufferedReader netIn = new BufferedReader(_netIn);
+//                            pageFullContent = netIn.readLine();
+                            pageJson = netIn.readLine();
+                            netIn.close();
+                            _netIn.close();
+                            __netIn.close();
+                        }
+
+                        parseJson();
+
+//                        Message msg = pHandler.obtainMessage(CONNECT_SUCC, pageFullContent);
+                        Message msg = pHandler.obtainMessage(CONNECT_SUCC, null);
+                        pHandler.sendMessage(msg);
+
+                    } catch (SocketTimeoutException e) {
+                        Message msg = pHandler.obtainMessage(CONNECT_ERROR, null);
+                        pHandler.sendMessage(msg);
+                        e.printStackTrace();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        }
+        else {//load content from local database
+            getPageThread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        offlineCursor.moveToNext();
+//                        String newsJson = offlineCursor.getString(offlineCursor.getColumnIndex(Global.NEWS_CACHE_JSON));
+                        pageJson = offlineCursor.getString(offlineCursor.getColumnIndex(Global.NEWS_CACHE_JSON));
+                        parseJson();
+
+//                        Message msg = pHandler.obtainMessage(OFFLINE, newsJson);
+                        Message msg = pHandler.obtainMessage(OFFLINE, null);
+                        pHandler.sendMessage(msg);
+                        offlineCursor.close();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        }
+
+        getPageThread.start();
+    }
+
+    private void linkDecorate() {
+        final refreshHandler rhandler = new refreshHandler(this);
 
         Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
-                String pageFullContent = null;
                 try {
-                    String head = "http://166.111.68.66:2042/news/action/query/detail?newsId=";
-                    URL pageUrl = new URL(head + id);
-
-                    HttpURLConnection conn = (HttpURLConnection) pageUrl.openConnection();
-                    conn.setConnectTimeout(5000);
-                    conn.setReadTimeout(5000);
-
-                    if (conn.getResponseCode() == 200) {
-                        InputStream __netIn = conn.getInputStream();
-                        InputStreamReader _netIn = new InputStreamReader(__netIn);
-                        BufferedReader netIn = new BufferedReader(_netIn);
-                        pageFullContent = netIn.readLine();
-                        netIn.close();
-                        _netIn.close();
-                        __netIn.close();
+                    getPageThread.join();
+                    String raw_content = news_raw_text;
+                    Log.e(TAG, "baike is running!"+news_people_and_location);
+                    for (String key : news_people_and_location) {
+                        Log.e(TAG, "key="+key);
+                        if (testKeyValid(key)) {
+                            raw_content = raw_content.replaceAll(key, "<a href=\"https://baike.baidu.com/item/" + key + "\">" + key + "</a>");
+                        }
                     }
 
-                    Message msg = pHandler.obtainMessage(CONNECT_SUCC, pageFullContent);
-                    pHandler.sendMessage(msg);
-
-                } catch (SocketTimeoutException e) {
-                    Message msg = pHandler.obtainMessage(CONNECT_ERROR, null);
-                    pHandler.sendMessage(msg);
-
-                    e.printStackTrace();
+                    String[] contents = raw_content.split("\n");
+                    news_Content = new ArrayList<>(Arrays.asList(contents));
+                    Message msg = rhandler.obtainMessage(CONNECT_SUCC, "");
+                    rhandler.sendMessage(msg);
                 } catch (Exception e) {
+                    Log.e(TAG, "baike is fucked");
                     e.printStackTrace();
                 }
             }
@@ -103,20 +230,24 @@ public class NewsActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_news, menu);
+
+        Cursor favoriteCursor = Global.dbCache.rawQuery("select * from "+ Global.LIST_FAVORITES +" where "+ Global.LIST_FAVORITES_NEWS_ID +"=?",
+        new String[] {news_id});
+        boolean isfavorate = (favoriteCursor.getCount() != 0);
+        menu.getItem(0).setChecked(isfavorate);
+        menu.getItem(0).setIcon(isfavorate ? R.drawable.ic_star_yellow_24dp : R.drawable.ic_star_border_white_24dp);
+
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_share) {
-            if(pageJson.equals(null)) {
-                // TODO: 2017/9/7 pop a warning toast.
+            if(pageJson == null) {
+                Toast.makeText(this, R.string.void_page, Toast.LENGTH_SHORT).show();
                 return false;
             }
             share_page=pageJson;
@@ -127,32 +258,103 @@ public class NewsActivity extends AppCompatActivity {
             return true;
         }
         else if (id == R.id.action_favorites) {
-            Intent intent = new Intent(this, FavoritesActivity.class);
-            intent.putExtra("page", pageJson);
-            startActivity(intent);
-            // TODO: 2017/9/7 is favorate flag
+            boolean isChecked = item.isChecked();
+            if(isChecked) {
+                Global.dbCache.delete(Global.LIST_FAVORITES, Global.LIST_FAVORITES_NEWS_ID+"=?", new String[] {this.news_id});
+                item.setIcon(R.drawable.ic_star_border_white_24dp);
+                Toast.makeText(this, R.string.delete_favorite_item, Toast.LENGTH_SHORT).show();
+            }
+            else {
+                ContentValues cv = new ContentValues();
+                cv.put(Global.LIST_FAVORITES_NEWS_ID, this.news_id);
+                cv.put(Global.LIST_FAVORITES_NEWS_TITLE, this.news_Title);
+                Date curDate = new Date(System.currentTimeMillis());
+                cv.put(Global.LIST_FAVORITES_TIME, sdf.format(curDate));
+                Global.dbCache.insert(Global.LIST_FAVORITES, null, cv);
+
+                item.setIcon(R.drawable.ic_star_yellow_24dp);
+                Toast.makeText(this, R.string.add_favorite_item, Toast.LENGTH_SHORT).show();
+//                Intent intent = new Intent(this, FavoritesActivity.class);
+//                intent.putExtra("page", pageJson);
+//                startActivity(intent);
+            }
+            item.setChecked(!isChecked);
+            return true;
+        }
+        else if (id == R.id.action_tts) {
+            if(Global.voice == false) {
+                Toast.makeText(this, R.string.voice_is_off, Toast.LENGTH_SHORT).show();
+                return true;
+            }
+            boolean isChecked = item.isChecked();
+            if(isChecked) {
+                item.setIcon(R.drawable.ic_record_voice_over_white_24dp);
+                newsSpeechSynthesizer.stopSpeaking();
+            }
+            else {
+                item.setIcon(R.drawable.ic_record_voice_over_yellow_24dp);
+                newsSpeechSynthesizer.startSpeaking(news_raw_text, newsTtsListener);
+            }
+            item.setChecked(!isChecked);
             return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
-    private final void parseJson() {
+    private void parseJson() {
         try {
             if(pageJson != null) {
                 JSONObject jPage = new JSONObject(pageJson);
                 news_Author = jPage.getString("news_Author");
                 news_Journal = jPage.getString("news_Journal");
                 news_Title = jPage.getString("news_Title");
-                news_Time = jPage.getString("news_Time");
-                news_Content = jPage.getString("news_Content");
+                String rawTime = jPage.getString("news_Time");
+                news_Time = rawTime.substring(0, 4) + "年" + rawTime.substring(4, 6) + "月" + rawTime.substring(6, 8) + "日";
+                String[] people_and_location = (jPage.getString("persons")
+                        + jPage.getString("locations")).replaceAll("[^\\u4e00-\\u9fa5]+", " ").trim().split(" ");
+                news_people_and_location = new ArrayList<>(Arrays.asList(people_and_location));
+                news_raw_text = jPage.getString("news_Content").replaceAll("[ 　]+([ 　]{2,}|\\t)", "\n　　");
+//                analyseContent();
+                news_Content = new ArrayList<>(Arrays.asList(news_raw_text.split("\n")));
+
+                String[] pic_urls = jPage.getString("news_Pictures").trim().split("[ ;,]");
+                news_pic_urls = new ArrayList<>(Arrays.asList(pic_urls));
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    class PageGetterHandler extends Handler {
+    private boolean testKeyValid(String key) {
+        boolean valid = false;
+        try {
+            URL baikeUrl = new URL("https://baike.baidu.com/item/" + key);
+            HttpURLConnection conn = (HttpURLConnection) baikeUrl.openConnection();
+            conn.setConnectTimeout(5000);
+            conn.setReadTimeout(5000);
+            int code = conn.getResponseCode();
+            if (code == 200) {
+                InputStream __netIn = conn.getInputStream();
+                InputStreamReader _netIn = new InputStreamReader(__netIn);
+                BufferedReader netIn = new BufferedReader(_netIn);
+                String pageFullContent = null;
+                for (int i = 0; i < 5; i++) {
+                    pageFullContent = netIn.readLine();
+                }
+                netIn.close();
+                _netIn.close();
+                __netIn.close();
+                valid = !(pageFullContent.trim().equals("<title>百度百科——全球最大中文百科全书</title>")
+                        || pageFullContent.trim().equals("<title>百度百科_全球最大中文百科全书</title>"));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return valid;
+    }
+
+    private class PageGetterHandler extends Handler {
         NewsActivity activity;
         PageGetterHandler(NewsActivity nActivity) {
             activity = nActivity;
@@ -165,23 +367,129 @@ public class NewsActivity extends AppCompatActivity {
                 if (msg.what == CONNECT_ERROR) {
                     Toast.makeText(activity, R.string.list_connection_failed, Toast.LENGTH_SHORT).show();
                 }
-                if(msg.what == CONNECT_SUCC) {
-                    activity.pageJson = String.valueOf(msg.obj);
-                    activity.parseJson();
+                else if(msg.what == CONNECT_SUCC) {
+//                    activity.pageJson = String.valueOf(msg.obj);
+//                    activity.parseJson();
 
-                    Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-                    toolbar.setTitle(activity.news_Title);
+                    setView((LinearLayout) findViewById(R.id.newsActivityLinearLayout));
 
-                    TextView textView = (TextView) findViewById(R.id.text);
-                    textView.setText(activity.news_Author + "\n" +
-                                activity.news_Journal + "\n" +
-                                activity.news_Title + "\n" +
-                                activity.news_Time + "\n" +
-                                activity.news_Content);
-                    textView.setMovementMethod(ScrollingMovementMethod.getInstance());
+                    ContentValues contentValues = new ContentValues();
+                    contentValues.put(Global.NEWS_CACHE_NEWS_ID, news_id);
+                    contentValues.put(Global.NEWS_CACHE_JSON, activity.pageJson);
+                    Global.dbCache.insert(Global.NEWS_CACHE, null, contentValues);
+                }
+                else if(msg.what == OFFLINE) {
+//                    activity.pageJson = String.valueOf(msg.obj);
+//                    activity.parseJson();
+
+                    setView((LinearLayout) findViewById(R.id.newsActivityLinearLayout));
                 }
             } catch (Exception e) {
                 e.printStackTrace();
+            }
+        }
+
+        private void setView(final LinearLayout linearLayout) {
+            Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+            toolbar.setTitle("新闻正文");
+
+            TextView titleTextView = (TextView) findViewById(R.id.newsActivityTitle);
+            titleTextView.setText(activity.news_Title);
+            TextView infoTextView = (TextView) findViewById(R.id.newsActivityInfo);
+            infoTextView.setText(activity.news_Author + "\t\t" + activity.news_Journal + "\t\t" + activity.news_Time);
+
+
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT);
+
+            int pic_num = news_pic_urls.size();
+            if(Global.noImage) { // when the no image mode is on or there is just
+                for (String text : news_Content) {
+                    linearLayout.addView(createTextView(text, params));
+                }
+            }
+            else if(pic_num == 0) {
+                // TODO: 2017/9/9 add auto-find picture
+                for (String text : news_Content) {
+                    linearLayout.addView(createTextView(text, params));
+                }
+            }
+            else {
+                int text_num = news_Content.size();
+                int text_per_pic = text_num / pic_num;
+                int current_text = 0;
+
+                for (String html : news_pic_urls) {
+                    linearLayout.addView(createImageView(html, params));
+                    for (int i = 0; i < text_per_pic; i++) {
+                        linearLayout.addView(createTextView(news_Content.get(current_text+i), params));
+                    }
+                    current_text += text_per_pic;
+                }
+                for (; current_text < text_num; current_text++) {
+                    linearLayout.addView(createTextView(news_Content.get(current_text), params));
+                }
+            }
+        }
+
+        private TextView createTextView(String text, ViewGroup.LayoutParams params) {
+            TextView tv = new TextView(activity);
+            tv.setLayoutParams(params);
+//            tv.setTextSize(R.dimen.news_content_font_size);
+//            tv.setTextScaleX(1.2f);
+            tv.setCompoundDrawablePadding(10);
+            tv.setText(Html.fromHtml(text));
+            tv.setPadding(20, 0, 20, 0);
+            tv.setMovementMethod(LinkMovementMethod.getInstance());
+            return tv;
+        }
+        private ImageView createImageView(String img_url, ViewGroup.LayoutParams params) {
+            ImageView iv = new ImageView(activity);
+            iv.setLayoutParams(params);
+            Glide.with(activity).load(img_url).into(iv);
+            return iv;
+        }
+    }
+
+    private class refreshHandler extends Handler {
+        NewsActivity activity;
+        refreshHandler(NewsActivity nActivity) {
+            activity = nActivity;
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            try {
+                setView();
+                Log.e(TAG, "after set view");
+            } catch (Exception e) {
+                Log.e(TAG, "rhandler exception");
+                e.printStackTrace();
+            }
+        }
+
+        private void setView() {
+            LinearLayout llyt = (LinearLayout) findViewById(R.id.newsActivityLinearLayout);
+
+            int pic_num = news_pic_urls.size();
+            if(pic_num == 0) {
+                int i = 0;
+                for (String para : news_Content) {
+                    ((TextView) llyt.getChildAt(i++)).setText(Html.fromHtml(para));
+                }
+            }
+            else {
+                int para_num = news_Content.size();
+                int para_per_pic = para_num / pic_num;
+                int currentPara = 0;
+                for (int i = 0; i < pic_num; i++) {
+                    for (int j = 0; j < para_per_pic; j++) {
+                        ((TextView) llyt.getChildAt(3 + i*(1+para_per_pic) + j)).setText(Html.fromHtml(news_Content.get(currentPara++)));
+                    }
+                }
+                for (int bias = 2 + pic_num*(1+para_per_pic); currentPara < para_num; currentPara++) {
+                    ((TextView) llyt.getChildAt(bias++)).setText(Html.fromHtml(news_Content.get(currentPara)));
+                }
             }
         }
     }

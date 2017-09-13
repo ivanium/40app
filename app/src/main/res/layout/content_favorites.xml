@@ -28,13 +28,14 @@
         app:layout_constraintTop_toTopOf="parent"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp">
+
         <ListView
-            android:padding="5dp"
-            android:scrollbars="none"
             android:id="@+id/list_view"
             android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:layout_height="0dp"/>
+            android:padding="5dp"
+            android:scrollbars="none" />
 
         <RelativeLayout
             android:visibility="gone"

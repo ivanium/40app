@@ -64,7 +64,7 @@
         AppSecret="b654737f108a0e783d4e1fec77a85746"
         RedirectUrl="http://www.sharesdk.cn"
         ShareByAppClient="true"
-        Enable="true" />
+        Enable="false" />
 
     <TencentWeibo
         Id="2"
@@ -102,7 +102,7 @@
 		userName="gh_afb25ac019c9"
 		path="/page/API/pages/share/share"
         BypassApproval="false"
-        Enable="true" />
+        Enable="false" />
 
     <WechatMoments
         Id="5"
@@ -110,14 +110,14 @@
         AppId="wx4868b35061f87885"
         AppSecret="64020361b8ec4c99936c0e3999a9f249"
         BypassApproval="false"
-        Enable="true" />
+        Enable="false" />
 
 	<WechatFavorite
         Id="6"
         SortId="6"
         AppId="wx4868b35061f87885"
         AppSecret="64020361b8ec4c99936c0e3999a9f249"
-        Enable="true" />
+        Enable="false" />
 
 	<!-- ShareByAppClient标识是否使用微博客户端分享，默认是false -->
 	<QQ
@@ -135,7 +135,7 @@
         ConsumerSecret="38053202e1a5fe26c80c753071f0b573"
         RedirectUrl="http://mob.com"
 		ShareByAppClient="true"
-		Enable="true" />
+		Enable="false" />
 
     <Twitter
         Id="9"
@@ -143,7 +143,7 @@
         ConsumerKey="LRBM0H75rWrU9gNHvlEAA2aOy"
         ConsumerSecret="gbeWsZvA9ELJSdoBzJ5oLKX0TU09UOwrzdGfo9Tg7DjyGuMe8G"
         CallbackUrl="http://mob.com"
-        Enable="true" />
+        Enable="false" />
 
     <Renren
         Id="10"
@@ -164,12 +164,12 @@
     <Email
         Id="12"
         SortId="12"
-        Enable="true" />
+        Enable="false" />
 
     <ShortMessage
         Id="13"
         SortId="13"
-        Enable="true" />
+        Enable="false" />
 
     <Douban
         Id="16"
