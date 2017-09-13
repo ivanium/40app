@@ -516,7 +516,7 @@ public class NewsActivity extends AppCompatActivity {
         // titleUrl是标题的网络链接，仅在Linked-in,QQ和QQ空间使用
         oks.setTitleUrl(share_news_Url);
         // text是分享文本，所有平台都需要这个字段
-        oks.setText(share_news_Content);
+        oks.setText(share_news_Title+" 网页链接："+share_news_Url);
         //分享网络图片，新浪微博分享网络图片需要通过审核后申请高级写入接口，否则请注释掉测试新浪微博
         Log.e("debug",news_pic_urls.get(0));
         oks.setImageUrl(news_pic_urls.get(0));
