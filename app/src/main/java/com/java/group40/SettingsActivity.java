@@ -27,6 +27,10 @@ public class SettingsActivity extends AppCompatActivity {
     private Button mOK;
     private Button mResetAll;
 
+    /*
+    Note: The implementation of alert dialogs refers to https://www.oschina.net/question/54100_32486
+     */
+
     private void emptyCategory() {
         AlertDialog.Builder emptyCat = new AlertDialog.Builder(this);
         emptyCat.setTitle(R.string.empty_category_title);

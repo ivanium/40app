@@ -1,3 +1,8 @@
+/*
+Note: This source file provides an adapter for MyList.
+The tutorial of the implementation of adapters is from http://blog.csdn.net/tianshuguang/article/details/7344315
+ */
+
 package com.java.group40;
 
 import android.content.Context;

@@ -1,8 +1,11 @@
+/*
+Note: This source file is written based on the Tabbed Activity template provided by Android Studio.
+ */
+
 package com.java.group40;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.database.sqlite.*;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -23,8 +26,6 @@ import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import java.io.*;
 
 import org.json.*;
-
-import cn.sharesdk.framework.ShareSDK;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -96,6 +97,9 @@ public class MainActivity extends AppCompatActivity {
             urlGenerator[i] = new URLGenerator(head, tail);
             }
 
+        /*
+        Note: The implementation of the night mode refers to http://kingideayou.github.io/2016/03/07/appcompat_23.2_day_night/
+         */
         if (Global.night)
             getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_YES);
         else
@@ -115,7 +119,6 @@ public class MainActivity extends AppCompatActivity {
 
         mTabLayout = (TabLayout) findViewById(R.id.tabs);
         mTabLayout.setupWithViewPager(mViewPager);
-        //ShareSDK.initSDK(this);
     }
 
     @Override
@@ -123,6 +126,10 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
         if (Global.newSettings) {
             Global.newSettings = false;
+
+            /*
+            Note: The implementation of restarting the app refers to http://johncookie.iteye.com/blog/1560649
+             */
             Intent intent = getBaseContext().getPackageManager().getLaunchIntentForPackage(getBaseContext().getPackageName());
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent);

@@ -1,9 +1,7 @@
 package com.java.group40;
 
-import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.*;
-import android.widget.BaseAdapter;
 
 import java.io.*;
 import java.util.ArrayList;

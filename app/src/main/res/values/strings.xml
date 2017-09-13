@@ -16,7 +16,6 @@
     <string name="cancel">取消</string>
     <string name="reset_all">全部重置</string>
     <string name="list_connection_failed">网络连接失败</string>
-    <string name="no_result">无符合条件的结果</string>
     <string name="no_more_result">没有更多了</string>
     <string name="title_activity_news">新闻正文</string>
     <string name="title_activity_search">SearchActivity</string>

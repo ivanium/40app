@@ -7,16 +7,12 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import android.app.Activity;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
-import cn.sharesdk.*;
-import cn.sharesdk.framework.ShareSDK;
-import cn.sharesdk.onekeyshare.*;
+import cn.sharesdk.onekeyshare.OnekeyShare;
 
 /**
  * Created by ivanium on 2017/9/7.
