@@ -1,6 +1,6 @@
 /*
-Note: The implementation of the list is based on an open-source library named pulltorefresh.
-The source code of pulltorefresh can be downloaded from https://github.com/chrisbanes/Android-PullToRefresh
+Note: The implementation of the list is based on an open-source library named PullToRefresh.
+The source code of PullToRefresh can be downloaded from https://github.com/chrisbanes/Android-PullToRefresh
 The tutorial is from http://www.cnblogs.com/tianzhijiexian/p/4023802.html
  */
 

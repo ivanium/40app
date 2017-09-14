@@ -10,7 +10,7 @@
         app:showAsAction="always" />
     <item
         android:id="@+id/action_favorites"
-        android:icon="@drawable/ic_star_border_white_24dp"
+        android:icon="@drawable/ic_collections_bookmark_white_24dp"
         android:orderInCategory="100"
         android:title="@string/action_favorites"
         app:showAsAction="always" />

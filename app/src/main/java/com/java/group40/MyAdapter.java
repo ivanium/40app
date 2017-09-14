@@ -88,6 +88,11 @@ public class MyAdapter extends BaseAdapter {
             String pics = jNews.getString("news_Pictures").trim();
             if ((pics.length() > 0) && (!Global.noImage)) {
                 String pic[] = pics.split("[ ;,]");
+
+                /*
+                Note: The pictures are loaded using the library Glide.
+                The tutorial is from http://blog.csdn.net/hshshshshs1/article/details/50786203
+                 */
                 Glide.with(context).load(pic[0]).placeholder(R.drawable.ic_image_gray_24dp).
                         error(R.drawable.ic_broken_image_gray_24dp).fitCenter().into(newsImage);
                 newsImage.setVisibility(View.VISIBLE);

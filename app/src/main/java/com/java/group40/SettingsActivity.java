@@ -28,7 +28,8 @@ public class SettingsActivity extends AppCompatActivity {
     private Button mResetAll;
 
     /*
-    Note: The implementation of alert dialogs refers to https://www.oschina.net/question/54100_32486
+    Note: The functions emptyCategory() and warningReset() are implementations of alert dialogs.
+    The tutorial is from https://www.oschina.net/question/54100_32486
      */
 
     private void emptyCategory() {
@@ -57,6 +58,10 @@ public class SettingsActivity extends AppCompatActivity {
             dirDatabase.delete();
         for (int i = 0; i < 12; i++)
             Global.isLoaded[i] = false;
+
+        /*
+        Note: The implementation of the clear of cache refers to http://blog.csdn.net/shangmingchao/article/details/51125554
+         */
         final Context applicationContext = getApplicationContext();
         Glide.get(applicationContext).clearMemory();
         Thread thread = new Thread(new Runnable() {
