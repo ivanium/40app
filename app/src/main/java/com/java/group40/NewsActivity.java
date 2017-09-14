@@ -68,6 +68,9 @@ public class NewsActivity extends AppCompatActivity {
 
     private Thread getPageThread = null;
 
+    /*
+    NOTE: using iflytek's speech synthesizer library, reference: http://www.xfyun.cn/services/online_tts
+    */
     private SpeechSynthesizer newsSpeechSynthesizer = null;
 
     private Cursor offlineCursor;
@@ -101,7 +104,10 @@ public class NewsActivity extends AppCompatActivity {
     }
 
     private void initSpeechSynthesizer() {
-        SpeechUtility.createUtility(this, SpeechConstant.APPID +"=59b3bff8"); //
+        /*
+        NOTE: using iflytek's speech synthesizer library, reference: http://www.xfyun.cn/services/online_tts
+         */
+        SpeechUtility.createUtility(this, SpeechConstant.APPID +"=59b3bff8");
         newsSpeechSynthesizer = SpeechSynthesizer.createSynthesizer(this, new InitListener() {
             @Override
             public void onInit(int code) {
@@ -112,7 +118,6 @@ public class NewsActivity extends AppCompatActivity {
         newsSpeechSynthesizer.setParameter(SpeechConstant.PITCH,"50");
         newsSpeechSynthesizer.setParameter(SpeechConstant.VOLUME,"50");
         newsSpeechSynthesizer.stopSpeaking();
-//        newsSpeechSynthesizer.startSpeaking("农夫山泉维他命水为您朗读：膜拜航爷！", newsTtsListener);
     }
 
     private SynthesizerListener newsTtsListener = new SynthesizerListener() {
@@ -149,7 +154,6 @@ public class NewsActivity extends AppCompatActivity {
             getPageThread = new Thread(new Runnable() {
                 @Override
                 public void run() {
-//                    String pageFullContent = null;
                     try {
                         String head = "http://166.111.68.66:2042/news/action/query/detail?newsId=";
                         URL pageUrl = new URL(head + news_id);
@@ -162,7 +166,6 @@ public class NewsActivity extends AppCompatActivity {
                             InputStream __netIn = conn.getInputStream();
                             InputStreamReader _netIn = new InputStreamReader(__netIn);
                             BufferedReader netIn = new BufferedReader(_netIn);
-//                            pageFullContent = netIn.readLine();
                             pageJson = netIn.readLine();
                             netIn.close();
                             _netIn.close();
@@ -171,7 +174,6 @@ public class NewsActivity extends AppCompatActivity {
 
                         parseJson();
 
-//                        Message msg = pHandler.obtainMessage(CONNECT_SUCC, pageFullContent);
                         Message msg = pHandler.obtainMessage(CONNECT_SUCC, null);
                         pHandler.sendMessage(msg);
 
@@ -191,11 +193,9 @@ public class NewsActivity extends AppCompatActivity {
                 public void run() {
                     try {
                         offlineCursor.moveToNext();
-//                        String newsJson = offlineCursor.getString(offlineCursor.getColumnIndex(Global.NEWS_CACHE_JSON));
                         pageJson = offlineCursor.getString(offlineCursor.getColumnIndex(Global.NEWS_CACHE_JSON));
                         parseJson();
 
-//                        Message msg = pHandler.obtainMessage(OFFLINE, newsJson);
                         Message msg = pHandler.obtainMessage(OFFLINE, null);
                         pHandler.sendMessage(msg);
                         offlineCursor.close();
@@ -224,9 +224,11 @@ public class NewsActivity extends AppCompatActivity {
                             return (o1.length() > o2.length() ? 1 : -1);
                         }
                     });
-//                    Log.e(TAG, "baike is running!"+news_people_and_location);
+
+                    /*
+                    NOTE: using baidu baike web service for adding baike link to specific words (people and location), reference: https://baike.baidu.com
+                     */
                     for (String key : news_people_and_location) {
-//                        Log.e(TAG, "key="+key);
                         if (testKeyValid(key)) {
                             raw_content = raw_content.replaceAll(key, "<a href=\"https://baike.baidu.com/item/" + key + "\">" + key + "</a>");
                         }
@@ -237,7 +239,6 @@ public class NewsActivity extends AppCompatActivity {
                     Message msg = rhandler.obtainMessage(CONNECT_SUCC, "");
                     rhandler.sendMessage(msg);
                 } catch (Exception e) {
-//                    Log.e(TAG, "baike is fucked");
                     e.printStackTrace();
                 }
             }
@@ -271,10 +272,12 @@ public class NewsActivity extends AppCompatActivity {
                 return false;
             }
             share_page=pageJson;
-            showShare();/*
+            showShare();
+            /*
             Intent intent = new Intent(this, ShareActivity.class);
             intent.putExtra("page", pageJson);
-            startActivity(intent);*/
+            startActivity(intent);
+            */
             return true;
         }
         else if (id == R.id.action_favorites) {
@@ -339,7 +342,7 @@ public class NewsActivity extends AppCompatActivity {
                 news_Keywords = new ArrayList<>(Arrays.asList(raw_keywords));
 
                 news_raw_text = jPage.getString("news_Content").replaceAll("[ 　]+([ 　]{2,}|\\t)", "\n　　");
-//                analyseContent();
+
                 news_Content = new ArrayList<>(Arrays.asList(news_raw_text.split("\n")));
 
                 String[] pic_urls = jPage.getString("news_Pictures").trim().split("[ ;,]");
@@ -400,8 +403,6 @@ public class NewsActivity extends AppCompatActivity {
                     Toast.makeText(activity, R.string.list_connection_failed, Toast.LENGTH_SHORT).show();
                 }
                 else if(msg.what == CONNECT_SUCC) {
-//                    activity.pageJson = String.valueOf(msg.obj);
-//                    activity.parseJson();
 
                     setView((LinearLayout) findViewById(R.id.newsActivityLinearLayout));
 
@@ -411,8 +412,6 @@ public class NewsActivity extends AppCompatActivity {
                     Global.dbCache.insert(Global.NEWS_CACHE, null, contentValues);
                 }
                 else if(msg.what == OFFLINE) {
-//                    activity.pageJson = String.valueOf(msg.obj);
-//                    activity.parseJson();
 
                     setView((LinearLayout) findViewById(R.id.newsActivityLinearLayout));
                 }
@@ -437,7 +436,7 @@ public class NewsActivity extends AppCompatActivity {
                     ViewGroup.LayoutParams.WRAP_CONTENT);
 
             int pic_num = news_pic_urls.size();
-            if(Global.noImage) { // when the no image mode is on or there is just
+            if(Global.noImage) { // when the no image mode is on
                 for (String text : news_Content) {
                     linearLayout.addView(createTextView(text, params));
                 }
@@ -497,6 +496,9 @@ public class NewsActivity extends AppCompatActivity {
                 if(news_Keywords.size() == 0) {
                     return false;
                 }
+                /*
+                NOTE: using Microsoft bing search api for images. reference: https://azure.microsoft.com/zh-cn/services/cognitive-services/bing-web-search-api/
+                 */
                 String key = (news_Keywords.size() == 1 ? news_Keywords.get(0) : news_Keywords.get(0) + "+"+news_Keywords.get(1));
                 Log.e(TAG, "autoImage: key = " + key);
                 URL pageUrl = new URL("https://api.cognitive.microsoft.com/bing/v5.0/search?q=" + URLEncoder.encode(key, "UTF-8")+"&responseFilter=images&mkt=zn-ch");
