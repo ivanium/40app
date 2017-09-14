@@ -48,6 +48,9 @@ public class FavoritesActivity extends AppCompatActivity {
     }
 
 }*/
+/*
+参考长按删除列表功能，参考网址http://blog.csdn.net/showdy/article/details/50699145
+ */
 public class FavoritesActivity extends AppCompatActivity implements View.OnClickListener {
     private ListView listview;
     private List<myInfo> info = new ArrayList<>();
