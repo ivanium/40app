@@ -591,6 +591,9 @@ public class NewsActivity extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        /*
+        使用开源第三方库sharesdk，参考其文档代码，参考网址为：http://wiki.mob.com/sdk-share-android-3-0-0/
+         */
         //ShareSDK.initSDK(this);
         OnekeyShare oks = new OnekeyShare();
         //关闭sso授权
