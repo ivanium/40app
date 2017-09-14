@@ -24,5 +24,7 @@
     <string name="delete_favorite_item">已删除</string>
     <string name="add_favorite_item">已添加</string>
     <string name="voice_is_off">您尚未开启语音播报功能</string>
-    <string name="void_page">当前页面为空，无法收藏</string>
+    <string name="void_page_share">当前页面为空，无法分享</string>
+    <string name="void_page_favorite">当前页面为空，无法收藏</string>
+    <string name="void_page_tts">当前页面为空，无法朗读</string>
 </resources>

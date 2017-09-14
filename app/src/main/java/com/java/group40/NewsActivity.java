@@ -268,7 +268,7 @@ public class NewsActivity extends AppCompatActivity {
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_share) {
             if(pageJson == null) {
-                Toast.makeText(this, R.string.void_page, Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.void_page_share, Toast.LENGTH_SHORT).show();
                 return false;
             }
             share_page=pageJson;
@@ -281,6 +281,11 @@ public class NewsActivity extends AppCompatActivity {
             return true;
         }
         else if (id == R.id.action_favorites) {
+            if(pageJson == null) {
+                Toast.makeText(this, R.string.void_page_favorite, Toast.LENGTH_SHORT).show();
+                return false;
+            }
+
             boolean isChecked = item.isChecked();
             if(isChecked) {
                 Global.dbCache.delete(Global.LIST_FAVORITES, Global.LIST_FAVORITES_NEWS_ID+"=?", new String[] {this.news_id});
@@ -305,9 +310,13 @@ public class NewsActivity extends AppCompatActivity {
             return true;
         }
         else if (id == R.id.action_tts) {
+            if(pageJson == null) {
+                Toast.makeText(this, R.string.void_page_tts, Toast.LENGTH_SHORT).show();
+                return false;
+            }
             if(Global.voice == false) {
                 Toast.makeText(this, R.string.voice_is_off, Toast.LENGTH_SHORT).show();
-                return true;
+                return false;
             }
             boolean isChecked = item.isChecked();
             if(isChecked) {
@@ -429,7 +438,7 @@ public class NewsActivity extends AppCompatActivity {
             textColor = titleTextView.getCurrentTextColor();
 
             TextView infoTextView = (TextView) findViewById(R.id.newsActivityInfo);
-            infoTextView.setText(activity.news_Author + "\t\t" + activity.news_Journal + "\t\t" + activity.news_Time);
+            infoTextView.setText(activity.news_Author + "\t\t" + activity.news_Journal + "\t\t" + activity.news_Time + "\n");
 
 
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
