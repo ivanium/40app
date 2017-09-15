@@ -55,12 +55,12 @@
             </intent-filter>
         </activity>
         <!--微信分享回调 -->
-        <!--<activity-->
-            <!--android:name=".wxapi.WXEntryActivity"-->
-            <!--android:theme="@android:style/Theme.Translucent.NoTitleBar"-->
-            <!--android:configChanges="keyboardHidden|orientation|screenSize"-->
-            <!--android:exported="true"-->
-            <!--android:screenOrientation="portrait" />-->
+        <activity
+            android:name="cn.sharesdk.demo.wxapi.WXEntryActivity"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:exported="true"
+            android:screenOrientation="portrait" />
         <!--&lt;!&ndash;易信分享回调 &ndash;&gt;-->
         <!--<activity-->
             <!--android:name=".yxapi.YXEntryActivity"-->
